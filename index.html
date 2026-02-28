@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>im-form-components</title>
+    <link rel="stylesheet" href="./src/index.css" />
+    <script type="module" src="/src/index.ts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <div class="container">
+      <form id="form">
+        <im-input label="Name" name="name" placeholder="Enter your name"></im-input>
+        <button type="submit">submit</button>
+      </form>
+    </div>
+    <script>
+      const form = document.getElementById('form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(form);
+        console.log(Object.fromEntries(formData.entries()));
+      });
+    </script>
+  </body>
+</html>
