@@ -11,6 +11,10 @@ export class ImInput extends LitElement {
         display: block;
         width: 100%;
       }
+
+      .input {
+        width: 100%;
+      }
     `,
   ];
 
@@ -18,44 +22,23 @@ export class ImInput extends LitElement {
     return true;
   }
 
-  @property({ type: String, attribute: true })
-  type: string = 'text';
-
-  @property({ type: String, attribute: true })
-  name: string = '';
-
+  @query('input') $input!: HTMLInputElement;
   @property({ type: String, attribute: true })
   label: string = '';
 
-  @property({ type: String, attribute: true })
-  value: string = '';
-
-  @property({ type: Number, attribute: true })
-  maxlength: number | null = null;
-
-  @property({ type: Number, attribute: true })
-  minlength: number | null = null;
-
-  @property({ type: Number, attribute: true })
-  max: number | null = null;
-
-  @property({ type: Number, attribute: true })
-  min: number | null = null;
-
-  @property({ type: Boolean, reflect: true })
-  required: boolean = false;
-
-  @property({ type: String, attribute: true })
-  placeholder: string = '';
-
-  @property({ type: String, attribute: true })
-  description: string = '';
-
+  /**
+   * Custom validation messages.
+   * Keys are ValidityState
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/ValidityState
+   * @example ```json
+   {
+     "valueMissing": "This field is required.",
+     "typeMismatch": "Please enter a valid email address."
+   }
+   * ```
+   */
   @property({ type: Object, attribute: true })
-  validationMessages = {
-    valueMissing: 'This field is required.',
-    typeMismatch: null, // NOTE: if `null`, will use native input validation message
-  };
+  errors: Record<string, string> = {};
 
   @property()
   internals: any;
@@ -66,76 +49,74 @@ export class ImInput extends LitElement {
   @state()
   uid: number = crypto.getRandomValues(new Uint8Array(1))[0];
 
-  // @ts-ignore
-  @query('input')
-  _input!: HTMLInputElement;
-
   constructor() {
     super();
     this.internals = this.attachInternals && this.attachInternals();
   }
 
-  protected _onInput(event: InputEvent) {
-    this.value = this._input.value;
-    this.internals.setFormValue(this.value);
-    this._manageRequired();
-    this.invalid = false;
+  protected setValue() {
+    this.internals.setFormValue(this.$input.value ?? '');
+    this.internals.setValidity(
+      this.$input.validity,
+      this.$input.validationMessage,
+      this.$input
+    );
+    this.internals.checkValidity();
   }
 
-  protected _onInvalid(event: InputEvent) {
-    event.preventDefault();
-    this.invalid = true;
-    this.internals.setValidity({
-      typeMismatch: true
-    }, this.validationMessages?.typeMismatch ?? this._input.validationMessage);
+  handleInput() {
+    this.setValue();
+    this.requestUpdate();
   }
 
-  protected _manageRequired() {
-    if (this.value === '' && this.required) {
-      this.internals.setValidity({
-        valueMissing: true
-      }, this.validationMessages.valueMissing, this._input);
-    } else {
-      this.internals.setValidity({});
-    }
+  inheritAttributes() {
+    Object.keys(this.attributes).forEach((keyAsString: string) => {
+      const key = parseFloat(keyAsString);
+
+      // Skips @properties
+      if (['label'].includes(this.attributes[key].name)) {
+        return;
+      }
+
+      if (typeof key === 'number')
+        this.$input.setAttribute(this.attributes[key].name, this.attributes[key].value);
+    })
   }
 
   firstUpdated() {
-    /** This ensures our element always participates in the form */
-    this.internals.setFormValue(this.value);
-
-    /** Make sure validations are set up */
-    this._manageRequired();
+    this.inheritAttributes();
+    this.setValue();
+    this.internals.setFormValue(this.getAttribute('value') ?? '');
   }
 
   protected render() {
+    const errorMessage = Object.entries(this.errors)
+      .filter(([key, value]) => this.internals?.validity[key])
+      .map(([key, value]) => {
+        return value;
+      });
+
     return html`<div class="field">
       <div class="label-wrapper">
-        <label for="input-${this.uid}" class="label">${this.label}</label>
+        <label for="input-${this.uid}" class="label">
+          <slot name="label"></slot>
+          ${this.label}
+        </label>
       </div>
       <div class="input-wrapper">
         <input
           novalidate
           id="input-${this.uid}"
-          .type="${this.type}"
-          minlength=${ifDefined(this.minlength ? this.minlength : undefined)}
-          maxlength=${ifDefined(this.maxlength ? this.maxlength : undefined)}
-          min=${ifDefined(this.min ? this.min : undefined)}
-          max=${ifDefined(this.max ? this.max : undefined)}
-          value="${this.value ?? ''}"
-          @input="${this._onInput}"
-          @invalid="${this._onInvalid}"
-          .placeholder="${this.placeholder}"
-          ?required="${this.required}"
+          @input="${this.handleInput}"
+          @blur="${this.handleInput}"
           class="input"
           />
       </div>
-      ${ this.invalid && this.description ? html`
-        <div class="errors">
-          ${this.invalid ? html`<span>${this.internals.validationMessage}</span>` : html`<span>${this.description}</span>`}
-          ${this.maxlength ? html`<span>${this.value.length} / ${this.maxlength}</span>` : ''}
-        </div>
-        ` : null}
+      ${ !this.internals?.validity?.valid ?
+        html`<p class="errors">
+          ${ errorMessage.length ? errorMessage : this.internals.validationMessage }
+        </p>` : null
+      }
     </div>`;
   }
 }
