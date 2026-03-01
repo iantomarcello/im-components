@@ -10,10 +10,64 @@ export class ImInput extends LitElement {
       :host {
         display: block;
         width: 100%;
+        --error_color: #e93535;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .label-wrapper {
+        &:has(+ .input-wrapper [required]) {
+          .label::after {
+            content: '*';
+            color: var(--error_color, #e53e3e);
+          }
+        }
+      }
+
+      .label {
+        font-size: 1rem;
+      }
+
+      .input-wrapper {
+        padding: 0.25rem 0.5rem;
+        border: 1px solid #cbcbcb;
+        border-radius: 0.375rem;
+        background-color: #fff;
+
+        &:focus-within {
+          outline: 2px solid #3182ce;
+          box-shadow: 0 0 0 1px #3182ce;
+        }
+
+        &:has(+  .errors) {
+          border-color: var(--error_color, #e53e3e);
+          outline: 1px solid var(--error_color, #e53e3e);
+          box-shadow: 0 0 0 1px var(--error_color, #e53e3e);
+          background-color: hsl(from var(--error_color, #e53e3e) h s calc(l * 1.6));
+        }
       }
 
       .input {
         width: 100%;
+        font-size: 1rem;
+        background-color: transparent;
+        border: 0;
+        padding: 0;
+        margin: 0;
+
+        &:focus {
+          outline: 0;
+        }
+      }
+
+      .errors {
+        margin-block: 0;
+        font-size: 0.75rem;
+        color: var(--error_color, #e53e3e);
       }
     `,
   ];

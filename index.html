@@ -7,7 +7,7 @@
     <title>im-form-components</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
   </head>
   <body class="bg-slate-900 text-white">
     <div class="container min-h-screen mx-auto grid place-items-center">
@@ -19,7 +19,9 @@
         </im-input>
 
         <p class="text-lg font-bold">Errors</p>
-        <im-input label="I need required" name="required" required></im-input>
+        <im-input name="required" required>
+          <span slot="label">I need required</span>
+        </im-input>
         <im-input input label="I have max length and invalid pattern" name="errors"
           value="definitely not a number and longer than it should be"
           pattern="^[\d]*$"
