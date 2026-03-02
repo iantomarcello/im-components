@@ -38,6 +38,7 @@ export class ImInput extends LitElement {
         border-radius: 0.375rem;
         background-color: #fff;
         font-size: 0.75rem;
+        color: #565656;
 
         &:focus-within {
           outline: 2px solid #3182ce;
