@@ -1,6 +1,5 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit-html/directives/if-defined.js';
 import 'element-internals-polyfill';
 
 @customElement('im-input')
@@ -153,7 +152,7 @@ export class ImInput extends LitElement {
         return value;
       });
 
-    return html`<div class="field">
+    return html`<div class="field" part="field">
       <div class="label-wrapper" part="label">
         <label for="input-${this.uid}" class="label">
           <slot name="label"></slot>
