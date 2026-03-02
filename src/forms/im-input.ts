@@ -180,6 +180,6 @@ export class ImInput extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'im-inputim': ImInput
+    'im-input': ImInput
   }
 }
