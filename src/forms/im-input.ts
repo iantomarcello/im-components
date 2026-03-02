@@ -37,6 +37,7 @@ export class ImInput extends LitElement {
         border: 1px solid #cbcbcb;
         border-radius: 0.375rem;
         background-color: #fff;
+        font-size: 0.75rem;
 
         &:focus-within {
           outline: 2px solid #3182ce;
@@ -53,8 +54,9 @@ export class ImInput extends LitElement {
 
       .input {
         width: 100%;
-        font-size: 1rem;
-        background-color: transparent;
+        font-size: inherit;
+        background-color: inherit;
+        color: inherit;
         border: 0;
         padding: 0;
         margin: 0;
@@ -128,7 +130,7 @@ export class ImInput extends LitElement {
       const key = parseFloat(keyAsString);
 
       // Skips @properties
-      if (['label'].includes(this.attributes[key].name)) {
+      if (['label', 'class'].includes(this.attributes[key].name)) {
         return;
       }
 
@@ -151,13 +153,13 @@ export class ImInput extends LitElement {
       });
 
     return html`<div class="field">
-      <div class="label-wrapper">
+      <div class="label-wrapper" part="label">
         <label for="input-${this.uid}" class="label">
           <slot name="label"></slot>
           ${this.label}
         </label>
       </div>
-      <div class="input-wrapper">
+      <div class="input-wrapper" part="input">
         <input
           novalidate
           id="input-${this.uid}"
@@ -167,7 +169,7 @@ export class ImInput extends LitElement {
           />
       </div>
       ${ !this.internals?.validity?.valid ?
-        html`<p class="errors">
+        html`<p class="errors" part="errors">
           ${ errorMessage.length ? errorMessage : this.internals.validationMessage }
         </p>` : null
       }
