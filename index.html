@@ -7,39 +7,58 @@
     <title>im-form-components</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   </head>
   <body class="bg-slate-900 text-white">
-    <div class="container min-h-screen mx-auto grid place-items-center">
-      <form id="form" class="max-w-2xl w-full grid gap-4">
-        <p class="text-lg font-bold">Commons</p>
-        <im-input label="This is a plain label" name="plain label" placeholder="The placeholder works"></im-input>
-        <im-input name="custom_label" placeholder="This field has custom label">
-          <span slot="label">I am a custom label</span>
-        </im-input>
+    <div class="container min-h-screen mx-auto grid place-items-center *:w-full *:max-w-2xl  *:mx-auto">
+      <details open>
+        <summary class="text-xl">Input</summary>
+        <form id="form" class="w-full grid gap-4">
+          <p class="text-lg font-bold">Commons</p>
+          <im-input
+            label="This is a plain label"
+            name="plain label"
+            placeholder="The placeholder works"
+          ></im-input>
+          <im-input
+            name="custom_label"
+            placeholder="This field has custom label"
+            class="[&::part(label)]:text-blue-400 [&::part(input)]:bg-blue-300"
+          >
+            <span slot="label"
+              >I am a custom label, styled with Tailwind as well</span
+            >
+          </im-input>
 
-        <p class="text-lg font-bold">Errors</p>
-        <im-input name="required" required>
-          <span slot="label">I need required</span>
-        </im-input>
-        <im-input input label="I have max length and invalid pattern" name="errors"
-          value="definitely not a number and longer than it should be"
-          pattern="^[\d]*$"
-          maxlength="4"
-        ></im-input>
-        <im-input input label="I have custom required message" name="custom_required"
-          required
-          errors='{"valueMissing": "You must fill out this field!"}'
-        ></im-input>
-        <button type="submit">submit</button>
-      </form>
+          <p class="text-lg font-bold">Errors</p>
+          <im-input name="required" required>
+            <span slot="label">I need required</span>
+          </im-input>
+          <im-input
+            label="I have max length and invalid pattern"
+            name="errors"
+            value="definitely not a number and longer than it should be"
+            pattern="^[\d]*$"
+            maxlength="4"
+          ></im-input>
+          <im-input
+            label="I have custom required message"
+            name="custom_required"
+            required
+            errors='{"valueMissing": "You must fill out this field!"}'
+          ></im-input>
+          <button type="submit">submit</button>
+        </form>
+      </details>
     </div>
     <script>
-      const form = document.getElementById('form');
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(form);
-        console.log(Object.fromEntries(formData.entries()));
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const formData = new FormData(form);
+          console.log(Object.fromEntries(formData.entries()));
+        });
       });
     </script>
   </body>
