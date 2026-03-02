@@ -1,7 +1,43 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import 'element-internals-polyfill';
+import type { ElementInternals } from 'element-internals-polyfill/dist/element-internals';
 
+/**
+ * Form-associated input web component.
+ *
+ * A lightweight wrapper around a native `<input>` that participates in forms
+ * using `ElementInternals`. Attributes (such as `name`, `type`, `required`,
+ * `placeholder`, and `value`) are forwarded to the internal input element so
+ * consumers can use standard input attributes on the custom element.
+ *
+ * Slots:
+ * - `label` — slot for custom label content. The `label` attribute provides
+ *   a simple string alternative.
+ *
+ * CSS parts:
+ * - `field` — top-level wrapper
+ * - `label` — label wrapper
+ * - `input` — input wrapper
+ * - `errors` — errors block
+ *
+ * Form behaviour:
+ * - The element is form-associated (`static formAssociated = true`) and uses
+ *   `ElementInternals` to set the form value and validity state.
+ *
+ * Events:
+ * - Native `input`/`change` events from the inner `<input>` are exposed as
+ *   usual; the component updates the form value/validity on `input` and `blur`.
+ *
+ * @element im-input
+ * @slot label - Content for the label
+ * @csspart field
+ * @csspart label
+ * @csspart input
+ * @csspart errors
+ * @example
+ * <im-input label="Email" name="email" type="email" required></im-input>
+ */
 @customElement('im-input')
 export class ImInput extends LitElement {
   static styles = [
@@ -96,8 +132,7 @@ export class ImInput extends LitElement {
   @property({ type: Object, attribute: true })
   errors: Record<string, string> = {};
 
-  @property()
-  internals: any;
+  internals: ElementInternals;
 
   @property({ type: Boolean })
   invalid?: boolean = false;
@@ -147,7 +182,7 @@ export class ImInput extends LitElement {
 
   protected render() {
     const errorMessage = Object.entries(this.errors)
-      .filter(([key, value]) => this.internals?.validity[key])
+      .filter(([key, value]) => this.internals?.validity[key as keyof ValidityState])
       .map(([key, value]) => {
         return value;
       });

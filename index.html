@@ -8,12 +8,30 @@
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+      .form {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 16px;
+
+        * {
+          grid-column: span 12;
+        }
+      }
+
+      .summary {
+        font-size: 1.5rem;
+        margin-block-end: 16px;
+      }
+      
+    </style>
   </head>
   <body class="bg-slate-900 text-white">
-    <div class="container min-h-screen mx-auto grid place-items-center *:w-full *:max-w-2xl  *:mx-auto">
-      <details open>
-        <summary class="text-xl">Input</summary>
-        <form id="form" class="w-full grid gap-4">
+    <div class="container min-h-screen mx-auto grid place-content-center">
+      <details>
+        <summary class="summary">Input text</summary>
+        <form class="form">
           <p class="text-lg font-bold">Commons</p>
           <im-input
             label="This is a plain label"
@@ -48,6 +66,15 @@
             errors='{"valueMissing": "You must fill out this field!"}'
           ></im-input>
           <button type="submit">submit</button>
+        </form>
+      </details>
+      <details open>
+        <summary class="summary">Input Check box and Radios</summary>
+        <form class="form">
+          <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
+          <im-input-checkbox name="pp">
+            <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe</span>
+          </im-input-checkbox>
         </form>
       </details>
     </div>
