@@ -12,7 +12,7 @@ export class ImInputCheckbox extends ImInput {
       :host {
         --size: 20px;
         --check_offset_top: 0.1lh;
-        --accent_color: #3182ce;
+        --accent_color: var(--focus_color);
         --layout: 'vertical';
       }
 
@@ -30,7 +30,7 @@ export class ImInputCheckbox extends ImInput {
         display: flex;
         gap: 0.5rem;
 
-        &:has(.input-wrapper :checked) {
+        &:has(:checked) {
           .checkbox-idle {
             background-color: var(--accent_color);
           }
@@ -40,10 +40,21 @@ export class ImInputCheckbox extends ImInput {
           }
         }
 
-        &:has(.input-wrapper:focus-within) {
+        &:has(:focus-within) {
           .checkbox-idle {
             outline-color: var(--accent_color);
             box-shadow: 0 0 1px 4px var(--accent_color);
+          }
+        }
+
+        &:has(:disabled) {
+          .label {
+            color: var(--disabled_color);
+          }
+
+          .checkbox-idle {
+            background-color: var(--disabled_color);
+            outline-color: hsl(from var(--disabled_color) h s calc(l* 0.7));
           }
         }
       }
@@ -55,7 +66,7 @@ export class ImInputCheckbox extends ImInput {
       }
 
       .checkbox-idle {
-        outline: 1px solid #ccc;
+        outline: 1px solid var(--idle_bg_color);
         border-radius: 4px;
         will-change: background-color;
         transition: background-color 0.1s ease-out;

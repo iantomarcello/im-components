@@ -45,7 +45,11 @@ export class ImInput extends LitElement {
       :host {
         display: block;
         width: 100%;
+        --font_color: #565656;
+        --idle_bg_color: #fff;
+        --focus_color: #3182ce;
         --error_color: #e93535;
+        --disabled_color: #919191;
       }
 
       .field {
@@ -68,16 +72,25 @@ export class ImInput extends LitElement {
       }
 
       .input-wrapper {
-        padding: 0.25rem 0.5rem;
-        border: 1px solid #cbcbcb;
+        padding: 0.35rem 0.5rem;
+        border: 1px solid hsl(from var(--idle_bg_color) h s calc(l * 0.5));
         border-radius: 0.375rem;
-        background-color: #fff;
+        background-color: var(--idle_bg_color);
         font-size: 0.75rem;
-        color: #565656;
+        color: var(--font_color);
 
         &:focus-within {
-          outline: 2px solid #3182ce;
-          box-shadow: 0 0 0 1px #3182ce;
+          outline: 2px solid var(--focus_color);
+          box-shadow: 0 0 2px 2px var(--focus_color);
+        }
+
+        &:has(:disabled, :read-only) {
+          background-color: var(--disabled_color);
+          border: 1px solid hsl(from var(--disabled_color) h s calc(l * 0.6));
+
+          input::placeholder {
+            color: hsl(from var(--disabled_color) h s calc(l * 0.6));
+          }
         }
 
         &:has(+  .errors) {

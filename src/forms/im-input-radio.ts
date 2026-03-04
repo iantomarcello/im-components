@@ -23,7 +23,7 @@ export class ImInputRadio extends ImInputCheckbox {
         display: flex;
         gap: 0.5rem;
 
-        &:has(.input-wrapper :checked) {
+        &:has(:checked) {
           .checkbox-idle {
             background-color: transparent
           }
@@ -33,7 +33,7 @@ export class ImInputRadio extends ImInputCheckbox {
           }
         }
 
-        &:has(.input-wrapper:focus-within) {
+        &:has(:focus-within) {
           .checkbox-idle {
             outline-color: var(--accent_color);
             box-shadow: 0 0 1px 4px var(--accent_color);

@@ -29,7 +29,7 @@
   </head>
   <body class="bg-slate-900 text-white">
     <div class="container min-h-screen mx-auto grid place-content-center">
-      <details>
+      <details open>
         <summary class="summary">Input text</summary>
         <form class="form">
           <p class="text-lg font-bold">Commons</p>
@@ -37,6 +37,18 @@
             label="This is a plain label"
             name="plain label"
             placeholder="The placeholder works"
+          ></im-input>
+          <im-input
+            label="I am disabled"
+            name="disabled"
+            placeholder="Oh noes, cannot enter value!"
+            disabled
+          ></im-input>
+          <im-input
+            label="I am readonly!"
+            name="disabled"
+            value="Please read"
+            readonly
           ></im-input>
           <im-input
             name="custom_label"
@@ -76,6 +88,7 @@
             <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
             </span>
           </im-input-checkbox>
+          <im-input-checkbox name="disabled" label="I am disabled" disabled></im-input-checkbox>
           <im-input-radio name="gender" label="Gender" required
             options='[
               { "value": "male", "label": "Male <small>lelaki!</small>" },
