@@ -72,9 +72,18 @@
         <summary class="summary">Input Check box and Radios</summary>
         <form class="form">
           <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
-          <im-input-checkbox name="pp">
-            <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe</span>
+          <im-input-checkbox name="pp" required>
+            <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
+            </span>
           </im-input-checkbox>
+          <im-input-radio name="gender" label="Gender" required
+            options='[
+              { "value": "male", "label": "Male <small>lelaki!</small>" },
+              { "value": "female", "label": "Female <small>perempuan!</small>" },
+              { "value": "other", "label": "Other" }
+            ]'
+          ></im-input-radio>
+          <button>Submit</button>
         </form>
       </details>
     </div>

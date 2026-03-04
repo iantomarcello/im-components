@@ -174,6 +174,14 @@ export class ImInput extends LitElement {
     })
   }
 
+  getError() {
+    return Object.entries(this.errors)
+      .filter(([key, value]) => this.internals?.validity[key as keyof ValidityState])
+      .map(([key, value]) => {
+        return value;
+      });
+  }
+
   firstUpdated() {
     this.inheritAttributes();
     this.setValue();
@@ -181,12 +189,6 @@ export class ImInput extends LitElement {
   }
 
   protected render() {
-    const errorMessage = Object.entries(this.errors)
-      .filter(([key, value]) => this.internals?.validity[key as keyof ValidityState])
-      .map(([key, value]) => {
-        return value;
-      });
-
     return html`<div class="field" part="field">
       <div class="label-wrapper" part="label">
         <label for="input-${this.uid}" class="label">
@@ -205,7 +207,7 @@ export class ImInput extends LitElement {
       </div>
       ${ !this.internals?.validity?.valid ?
         html`<p class="errors" part="errors">
-          ${ errorMessage.length ? errorMessage : this.internals.validationMessage }
+          ${ this.getError().length ? this.getError() : this.internals.validationMessage }
         </p>` : null
       }
     </div>`;

@@ -1,4 +1,4 @@
-import { css } from 'lit';
+import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
@@ -11,69 +11,78 @@ export class ImInputCheckbox extends ImInput {
     css`
       :host {
         --size: 20px;
-        --check_offset_top: 3px;
+        --check_offset_top: 0.1lh;
         --accent_color: #3182ce;
+        --layout: 'vertical';
       }
 
       .field {
         position: relative;
       }
 
-      .label-wrapper {
-        position: relative;
+      .input-container {
+        display: flex;
+        gap: 0.5rem 1rem;
+        flex-direction: if(style(--layout: 'vertical'): column; else: row);
+      }
+
+      .input-row {
         display: flex;
         gap: 0.5rem;
 
-        &::before, &::after {
-          content: '';
-          display: block;
-          flex-shrink: 0;
-          flex-grow: 0;
-          margin-top: var(--check_offset_top);
-        }
-
-        &::before {
-          width: var(--size);
-          height: var(--size);
-          outline: 1px solid #ccc;
-          border-radius: 4px;
-          will-change: background-color;
-          transition: background-color 0.1s ease-out;
-          pointer-events: none;
-        }
-
-        &::after {
-          width: calc(var(--size) * 0.5);
-          height: calc(var(--size) * 0.2);
-          position: absolute;
-          border-left: 2px solid white;
-          border-bottom: 2px solid white;
-          top: calc(var(--size) * 0.45);
-          left: calc(var(--size) * 0.5);
-          translate: -50% -50%;
-          rotate: -45deg;
-          scale: 0;
-          will-change: scale;
-          transition: scale 0.1s 0.05s ease-out;
-          pointer-events: none;
-        }
-
-        &:has(~ .input-wrapper :checked) {
-          &::before {
+        &:has(.input-wrapper :checked) {
+          .checkbox-idle {
             background-color: var(--accent_color);
           }
 
-          &::after {
+          .checkbox-checked {
             scale: 1;
           }
         }
 
-        &:has(~ .input-wrapper:focus-within) {
-          &::before {
+        &:has(.input-wrapper:focus-within) {
+          .checkbox-idle {
             outline-color: var(--accent_color);
             box-shadow: 0 0 1px 4px var(--accent_color);
           }
         }
+      }
+
+      .checkbox-idle, .checkbox-checked {
+        width: 100%;
+        height: 100%;
+        margin-top: var(--check_offset_top);
+      }
+
+      .checkbox-idle {
+        outline: 1px solid #ccc;
+        border-radius: 4px;
+        will-change: background-color;
+        transition: background-color 0.1s ease-out;
+        pointer-events: none;
+      }
+
+      .checkbox-checked {
+        width: 50%;
+        height: 20%;
+        position: absolute;
+        border-left: 2px solid white;
+        border-bottom: 2px solid white;
+        top: 50%;
+        left: 50%;
+        translate: -50% -50%;
+        rotate: -45deg;
+        scale: 0;
+        will-change: scale;
+        transition: scale 0.1s 0.05s ease-out;
+        pointer-events: none;
+      }
+
+      .checkbox {
+        width: var(--size);
+        height: var(--size);
+        position: relative;
+        flex-shrink: 0;
       }
 
       .input-wrapper {
@@ -104,14 +113,51 @@ export class ImInputCheckbox extends ImInput {
     super();
   }
 
+  init() {
+    this.$input.setAttribute('type', 'checkbox');
+  }
+
   firstUpdated(): void {
     super.firstUpdated();
-    this.$input.setAttribute('type', 'checkbox');
+    this.init();
+  }
+
+  protected render() {
+    return html`<div class="field" part="field">
+      <div class="input-container" part="input-container">
+        <div class="input-row">
+          <div class="checkbox" part="checkbox">
+            <div class="checkbox-idle"></div>
+            <div class="checkbox-checked"></div>
+          </div>
+
+          <label for="input-${this.uid}" class="label" part="label">
+            <slot name="label"></slot>
+            ${this.label}
+          </label>
+
+          <div class="input-wrapper" part="input">
+            <input
+              novalidate
+              id="input-${this.uid}"
+              @input="${this.handleInput}"
+              @blur="${this.handleInput}"
+              class="input"
+              />
+          </div>
+        </div>
+      </div>
+      ${ !this.internals?.validity?.valid ?
+        html`<p class="errors" part="errors">
+          ${ this.getError().length ? this.getError() : this.internals.validationMessage }
+        </p>` : null
+      }
+    </div>`;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'im-input-checkbox': ImInput
+    'im-input-checkbox': ImInputCheckbox
   }
 }
