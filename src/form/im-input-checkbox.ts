@@ -12,7 +12,6 @@ export class ImInputCheckbox extends ImInput {
       :host {
         --size: 20px;
         --check_offset_top: 0.1lh;
-        --accent_color: var(--focus_color);
         --layout: 'vertical';
       }
 

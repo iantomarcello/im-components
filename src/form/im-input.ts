@@ -50,6 +50,7 @@ export class ImInput extends LitElement {
         --focus_color: #3182ce;
         --error_color: #e93535;
         --disabled_color: #919191;
+        --accent_color: var(--focus_color);
       }
 
       .field {
@@ -175,12 +176,16 @@ export class ImInput extends LitElement {
     this.requestUpdate();
   }
 
+  get attributesNotInherited() {
+    return ['label', 'class'];
+  }
+
   inheritAttributes() {
     Object.keys(this.attributes).forEach((keyAsString: string) => {
       const key = parseFloat(keyAsString);
 
       // Skips @properties
-      if (['label', 'class'].includes(this.attributes[key].name)) {
+      if ([...this.attributesNotInherited].includes(this.attributes[key].name)) {
         return;
       }
 
@@ -219,13 +224,14 @@ export class ImInput extends LitElement {
           ${this.label}
         </label>
       </div>
-      <div class="input-wrapper" part="input">
+      <div class="input-wrapper" part="input-wrapper">
         <input
           novalidate
           id="input-${this.uid}"
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
           class="input"
+          part="input"
           />
       </div>
       ${ !this.internals?.validity?.valid ?
