@@ -47,6 +47,7 @@ export class ImInput extends LitElement {
         width: 100%;
         --font_color: #565656;
         --idle_bg_color: #fff;
+        --border_color: hsl(from var(--idle_bg_color) h s calc(l * 0.5));
         --focus_color: #3182ce;
         --error_color: #e93535;
         --disabled_color: #919191;
@@ -74,7 +75,7 @@ export class ImInput extends LitElement {
 
       .input-wrapper {
         padding: 0.35rem 0.5rem;
-        border: 1px solid hsl(from var(--idle_bg_color) h s calc(l * 0.5));
+        border: 1px solid var(--border_color);
         border-radius: 0.375rem;
         background-color: var(--idle_bg_color);
         font-size: 0.75rem;

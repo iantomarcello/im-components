@@ -28,6 +28,16 @@ export class ImInputRange extends ImInput {
         --thumb_focus_offset: 0.125rem;
       }
 
+      .field {
+        display: grid;
+        /* For \`showControls\` */
+        grid-template-columns: 1fr max-content;
+      }
+
+      .label-wrapper, .errors {
+        grid-column: span 2;
+      }
+
       .input-wrapper {
         --range: calc(var(--max) - var(--min));
         --ratio: calc((var(--value) - var(--min))/var(--range));
@@ -125,11 +135,68 @@ export class ImInputRange extends ImInput {
           opacity: 1;
         }
       }
+
+      /* -------------- */
+      /*  With Buttons  */
+      /* -------------- */
+
+      .control {
+        display: flex;
+        gap: 0.5rem;
+
+        button, input {
+          background-color: var(--idle_bg_color);
+          border: 0;
+          outline: 1px solid var(--border_color);
+          border-radius: 4px;
+
+          &:focus-within {
+            outline: 2px solid var(--focus_color);
+            box-shadow: 0 0 2px 2px var(--focus_color);
+          }
+        }
+
+        button {
+          flex-shrink: 0;
+          aspect-ratio: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          cursor: pointer;
+
+          &:active {
+            background-color: hsl(from var(--idle_bg_color) h s calc(l * 0.9));
+          }
+        }
+
+        input {
+          -moz-appearance: textfield;
+          appearance: textfield;
+          min-width: 2ch;
+          field-sizing: content;
+          margin: 0;
+          padding: 2px;
+          text-align: center;
+
+          &::-webkit-outer-spin-button,
+          &::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+        }
+      }
+
     `,
   ];
 
+  /** Displays a tooltip that shows the current value. */
   @property({ type: Boolean })
   showTooltip = false;
+
+  /** Shows buttons to increment or decrement the value. */
+  @property({ type: Boolean })
+  showControls = false;
 
   @query('.input-wrapper') $inputWrapper!: HTMLDivElement;
 
@@ -181,7 +248,20 @@ export class ImInputRange extends ImInput {
           />
 
           ${ !this.showTooltip ? '' : html`<span class="tooltip-anchor"></span>
-            <span class="tooltip" part="tooltip">${this.$input?.value ?? 1 }</span>` }
+            <span class="tooltip" part="tooltip">${this.$input?.value ?? this.getAttribute('value') ?? '1' }</span>` }
+          ${ !this.showControls ? '' : html`
+            <div class="control" part="control">
+              <button part="control_button decrement">-</button>
+              <input
+                id="input-${this.uid}-control"
+                type="number"
+                .value=${this.$input?.value ?? this.getAttribute('value') ?? '1'}
+                @input="${this.handleInput}"
+                @blur="${this.handleInput}"
+              >
+              <button part="control_button increment">+</button>
+            </div>
+          `}
       </div>
       ${ !this.internals?.validity?.valid ?
         html`<p class="errors" part="errors">

@@ -54,6 +54,11 @@
               readonly
             ></im-input>
             <im-input
+              label="I am have a default value"
+              name="with_value"
+              value="Cheese cake"
+            ></im-input>
+            <im-input
               name="custom_label"
               placeholder="This field has custom label"
               class="[&::part(label)]:text-blue-400 [&::part(input)]:bg-blue-300"
@@ -121,6 +126,15 @@
               label="range input with tooltip to display current value"
               name="tooltip"
               showTooltip
+            ></im-input-range>
+            <im-input-range
+              label="range input with buttons to increment or decrement"
+              name="buttons"
+              max="100"
+              min="10"
+              value="20"
+              step="0.01"
+              showControls
             ></im-input-range>
             <button type="submit">submit</button>
           </form>
