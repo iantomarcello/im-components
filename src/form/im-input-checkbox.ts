@@ -12,7 +12,6 @@ export class ImInputCheckbox extends ImInput {
       :host {
         --size: 20px;
         --check_offset_top: 0;
-        --layout: 'vertical';
       }
 
       .field {
@@ -22,7 +21,6 @@ export class ImInputCheckbox extends ImInput {
       .input-container {
         display: flex;
         gap: 0.5rem 1rem;
-        flex-direction: if(style(--layout: 'vertical'): column; else: row);
       }
 
       .input-row {

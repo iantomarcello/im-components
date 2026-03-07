@@ -16,6 +16,11 @@ export class ImInputRadio extends ImInputCheckbox {
     css`
       :host {
         --radio_size_percent: 0.66;
+        --layout: 'horizontal';
+      }
+
+      .input-container {
+        flex-direction: if(style(--layout: 'horizontal'): row; else: column);
       }
 
       .input-row {

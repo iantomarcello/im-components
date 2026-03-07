@@ -104,6 +104,16 @@
                 { "value": "other", "label": "Other" }
               ]'
             ></im-input-radio>
+            <im-input-radio name="fruit" required
+              style="--layout: no-horizontal"
+              options='[
+                { "value": "Apple", "label": "Apple <small>🍎</small>" },
+                { "value": "Orange", "label": "Orange <small>🟠</small>" },
+                { "value": "Banana", "label": "Banana <small>🍌</small>" }
+              ]'
+            >
+              <span slot="label">Fruits! <small>With vertical layout</small></span>
+            </im-input-radio>
             <button>Submit</button>
           </form>
         </details>
