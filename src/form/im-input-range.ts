@@ -214,6 +214,36 @@ export class ImInputRange extends ImInput {
     this.$inputWrapper.style.setProperty('--value', this.$input.value);
   }
 
+  /* ----------------------- */
+  /*  showControl attribute  */
+  /* ----------------------- */
+
+  /**
+   * Increment or decrement the values.
+   * Holding keyboard Control Shift and Alt keys have will have multiplier effect -
+   * 10, 100 and 0.1 respectively.
+   */
+  onControlButtonClick(event: PointerEvent) {
+    const button = event.currentTarget as HTMLButtonElement;
+    if (!button) return;
+
+    let step = parseFloat(this.$input.getAttribute('step') ?? '1');
+    step *= event.ctrlKey ? 10 : 1;
+    step *= event.shiftKey ? 100 : 1;
+    step *= event.altKey ? 0.1 : 1;
+    if (button.value === '+') {
+      this.$input.value = (parseFloat(this.$input.value) + step).toString();
+    } else {
+      this.$input.value = (parseFloat(this.$input.value) - step).toString();
+    }
+    this.setValue();
+    this.requestUpdate();
+  }
+
+  /* ------------ */
+  /*  LitElement  */
+  /* ------------ */
+
   firstUpdated(): void {
     super.firstUpdated();
     // Use explicit default of '1' when no `value` attribute is provided
@@ -251,7 +281,9 @@ export class ImInputRange extends ImInput {
             <span class="tooltip" part="tooltip">${this.$input?.value ?? this.getAttribute('value') ?? '1' }</span>` }
           ${ !this.showControls ? '' : html`
             <div class="control" part="control">
-              <button part="control_button decrement">-</button>
+              <button part="control_button decrement" value="-" @click=${this.onControlButtonClick}>
+                <slot name="control_button_decrement">-</slot>
+              </button>
               <input
                 id="input-${this.uid}-control"
                 type="number"
@@ -259,7 +291,9 @@ export class ImInputRange extends ImInput {
                 @input="${this.handleInput}"
                 @blur="${this.handleInput}"
               >
-              <button part="control_button increment">+</button>
+              <button part="control_button increment" value="+" @click=${this.onControlButtonClick}>
+                <slot name="control_button_increment">+</slot>
+              </button>
             </div>
           `}
       </div>
