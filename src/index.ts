@@ -1,3 +1,3 @@
-import '../src/forms/im-input'
-import '../src/forms/im-input-checkbox'
-import '../src/forms/im-input-radio'
+import '../src/form/im-input'
+import '../src/form/im-input-checkbox'
+import '../src/form/im-input-radio'

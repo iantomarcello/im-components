@@ -28,77 +28,82 @@
     </style>
   </head>
   <body class="bg-slate-900 text-white">
-    <div class="container min-h-screen mx-auto grid place-content-center">
-      <details open>
-        <summary class="summary">Input text</summary>
-        <form class="form">
-          <p class="text-lg font-bold">Commons</p>
-          <im-input
-            label="This is a plain label"
-            name="plain label"
-            placeholder="The placeholder works"
-          ></im-input>
-          <im-input
-            label="I am disabled"
-            name="disabled"
-            placeholder="Oh noes, cannot enter value!"
-            disabled
-          ></im-input>
-          <im-input
-            label="I am readonly!"
-            name="disabled"
-            value="Please read"
-            readonly
-          ></im-input>
-          <im-input
-            name="custom_label"
-            placeholder="This field has custom label"
-            class="[&::part(label)]:text-blue-400 [&::part(input)]:bg-blue-300"
-          >
-            <span slot="label"
-              >I am a custom label, styled with Tailwind as well</span
-            >
-          </im-input>
 
-          <p class="text-lg font-bold">Errors</p>
-          <im-input name="required" required>
-            <span slot="label">I need required</span>
-          </im-input>
-          <im-input
-            label="I have max length and invalid pattern"
-            name="errors"
-            value="definitely not a number and longer than it should be"
-            pattern="^[\d]*$"
-            maxlength="4"
-          ></im-input>
-          <im-input
-            label="I have custom required message"
-            name="custom_required"
-            required
-            errors='{"valueMissing": "You must fill out this field!"}'
-          ></im-input>
-          <button type="submit">submit</button>
-        </form>
-      </details>
-      <details open>
-        <summary class="summary">Input Check box and Radios</summary>
-        <form class="form">
-          <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
-          <im-input-checkbox name="pp" required>
-            <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
-            </span>
-          </im-input-checkbox>
-          <im-input-checkbox name="disabled" label="I am disabled" disabled></im-input-checkbox>
-          <im-input-radio name="gender" label="Gender" required
-            options='[
-              { "value": "male", "label": "Male <small>lelaki!</small>" },
-              { "value": "female", "label": "Female <small>perempuan!</small>" },
-              { "value": "other", "label": "Other" }
-            ]'
-          ></im-input-radio>
-          <button>Submit</button>
-        </form>
-      </details>
+    <div class="container min-h-screen mx-auto grid place-content-center gap-12">
+      <h1 class="text-3xl text-center font-semibold uppercase tracking-wider">Component testing ground</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
+        <details open>
+          <summary class="summary">Input text</summary>
+          <form class="form">
+            <p class="text-lg font-bold">Commons</p>
+            <im-input
+              label="This is a plain label"
+              name="plain label"
+              placeholder="The placeholder works"
+            ></im-input>
+            <im-input
+              label="I am disabled"
+              name="disabled"
+              placeholder="Oh noes, cannot enter value!"
+              disabled
+            ></im-input>
+            <im-input
+              label="I am readonly!"
+              name="disabled"
+              value="Please read"
+              readonly
+            ></im-input>
+            <im-input
+              name="custom_label"
+              placeholder="This field has custom label"
+              class="[&::part(label)]:text-blue-400 [&::part(input)]:bg-blue-300"
+            >
+              <span slot="label"
+                >I am a custom label, styled with Tailwind as well</span
+              >
+            </im-input>
+  
+            <p class="text-lg font-bold">Errors</p>
+            <im-input name="required" required>
+              <span slot="label">I need required</span>
+            </im-input>
+            <im-input
+              label="I have max length and invalid pattern"
+              name="errors"
+              value="definitely not a number and longer than it should be"
+              pattern="^[\d]*$"
+              maxlength="4"
+            ></im-input>
+            <im-input
+              label="I have custom required message"
+              name="custom_required"
+              required
+              errors='{"valueMissing": "You must fill out this field!"}'
+            ></im-input>
+            <button type="submit">submit</button>
+          </form>
+        </details>
+        <details open>
+          <summary class="summary">Input Check box and Radios</summary>
+          <form class="form">
+            <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
+            <im-input-checkbox name="pp" required>
+              <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
+              </span>
+            </im-input-checkbox>
+            <im-input-checkbox name="disabled" label="I am disabled" disabled></im-input-checkbox>
+            <im-input-radio name="gender" label="Gender" required
+              options='[
+                { "value": "male", "label": "Male <small>lelaki!</small>" },
+                { "value": "female", "label": "Female <small>perempuan!</small>" },
+                { "value": "other", "label": "Other" }
+              ]'
+            ></im-input-radio>
+            <button>Submit</button>
+          </form>
+        </details>
+
+      </div>
     </div>
     <script>
       const forms = document.querySelectorAll('form');

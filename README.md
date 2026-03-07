@@ -1,6 +1,6 @@
-# im-form-components
+# im-components
 
-A small collection of lightweight web form components for personal use.
+A small collection of lightweight web components for personal use.
 
 Includes simple custom inputs used across personal projects (checkbox, radio, text input).
 

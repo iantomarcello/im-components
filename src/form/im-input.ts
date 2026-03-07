@@ -104,6 +104,7 @@ export class ImInput extends LitElement {
       .input {
         width: 100%;
         font-size: inherit;
+        font-family: inherit;
         background-color: inherit;
         color: inherit;
         border: 0;
@@ -158,8 +159,9 @@ export class ImInput extends LitElement {
     this.internals = this.attachInternals && this.attachInternals();
   }
 
-  protected setValue() {
-    this.internals.setFormValue(this.$input.value ?? '');
+  setValue(value = this.$input.value) {
+    this.$input.value = value ?? '';
+    this.internals.setFormValue(value);
     this.internals.setValidity(
       this.$input.validity,
       this.$input.validationMessage,
@@ -195,10 +197,18 @@ export class ImInput extends LitElement {
       });
   }
 
+  static get observedAttributes() {
+    return [...super.observedAttributes, 'value']; // Include Lit's and custom attributes
+  }
+
   firstUpdated() {
     this.inheritAttributes();
     this.setValue();
     this.internals.setFormValue(this.getAttribute('value') ?? '');
+  }
+
+  attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
+    super.attributeChangedCallback(name, oldVal, newVal); 
   }
 
   protected render() {

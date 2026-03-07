@@ -2,7 +2,6 @@ import { html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInputCheckbox } from './im-input-checkbox';
-import { ifDefined } from 'lit/directives/if-defined.js';
 
 export interface ImOption {
   label: string,
@@ -95,7 +94,7 @@ export class ImInputRadio extends ImInputCheckbox {
               <div class="checkbox-checked"></div>
             </div>
 
-            <label for="input-${this.uid}-${opt.value}" class="label" part="label"
+            <label for="input-${this.uid}-${opt.value}" class="label" part="input-label"
               .innerHTML=${opt.label}
             >
             </label>
