@@ -25,6 +25,7 @@ export class ImInputCheckbox extends ImInput {
 
       .input-row {
         display: flex;
+        align-items: center;
         gap: 0.5rem;
 
         &:has(:checked) {

@@ -24,23 +24,9 @@ export class ImInputRadio extends ImInputCheckbox {
       }
 
       .input-row {
-        display: flex;
-        gap: 0.5rem;
-
         &:has(:checked) {
           .checkbox-idle {
-            background-color: transparent
-          }
-
-          .checkbox-checked {
-            scale: 1;
-          }
-        }
-
-        &:has(:focus-within) {
-          .checkbox-idle {
-            outline-color: var(--accent_color);
-            box-shadow: 0 0 1px 4px var(--accent_color);
+            background-color: transparent;
           }
         }
       }

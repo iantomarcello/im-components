@@ -18,13 +18,23 @@
         * {
           grid-column: span 12;
         }
+
+        button[type="submit"] {
+          padding-block: 0.5rem;
+          background-color: navy;
+          border-radius: 8px;
+          color: white;
+
+          &::before {
+            content: "Submit and print on console!";
+          }
+        }
       }
 
       .summary {
         font-size: 1.5rem;
         margin-block-end: 16px;
       }
-      
     </style>
   </head>
   <body class="bg-slate-900 text-white">
@@ -61,7 +71,7 @@
             <im-input
               name="custom_label"
               placeholder="This field has custom label"
-              class="[&::part(label)]:text-blue-400 [&::part(input)]:bg-blue-300"
+              class="[&::part(label)]:text-blue-400 [&::part(input-wrapper)]:bg-blue-300"
             >
               <span slot="label"
                 >I am a custom label, styled with Tailwind as well</span
@@ -85,7 +95,7 @@
               required
               errors='{"valueMissing": "You must fill out this field!"}'
             ></im-input>
-            <button type="submit">submit</button>
+            <button type="submit"></button>
           </form>
         </details>
         <details open>
@@ -114,7 +124,7 @@
             >
               <span slot="label">Fruits! <small>With vertical layout</small></span>
             </im-input-radio>
-            <button>Submit</button>
+            <button type="submit"></button>
           </form>
         </details>
         <details open>
