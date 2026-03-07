@@ -162,7 +162,6 @@ export class ImInput extends LitElement {
   }
 
   setValue(value = this.$input.value) {
-    this.$input.value = value ?? '';
     this.internals.setFormValue(value);
     this.internals.setValidity(
       this.$input.validity,
@@ -210,7 +209,9 @@ export class ImInput extends LitElement {
   firstUpdated() {
     this.inheritAttributes();
     this.setValue();
-    this.internals.setFormValue(this.getAttribute('value') ?? '');
+    const value = this.getAttribute('value') ?? '';
+    this.$input.value = value;
+    this.internals.setFormValue(value);
   }
 
   attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {

@@ -1,5 +1,5 @@
 import { html, css } from 'lit';
-import { customElement, property, query, state } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
 
@@ -143,11 +143,15 @@ export class ImInputRange extends ImInput {
 
   setValue() {
     super.setValue();
+    // Keep CSS var in sync with the inner input's current value
     this.$inputWrapper.style.setProperty('--value', this.$input.value);
   }
 
   firstUpdated(): void {
     super.firstUpdated();
+    // Use explicit default of '1' when no `value` attribute is provided
+    this.$input.value =  this.hasAttribute('value') ? (this.getAttribute('value') ?? '1') : '1';
+
     this.$inputWrapper.style.setProperty('--min', this.$input.min);
     this.$inputWrapper.style.setProperty('--max', this.$input.max);
     this.$inputWrapper.style.setProperty('--value', this.$input.value);
