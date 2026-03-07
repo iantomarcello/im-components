@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>im-form-components</title>
+    <title>im-components</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
     <style>
       .form {
         width: 100%;
@@ -100,6 +100,24 @@
               ]'
             ></im-input-radio>
             <button>Submit</button>
+          </form>
+        </details>
+        <details open>
+          <summary class="summary">Input range, date</summary>
+          <form class="form">
+            <im-input-range
+              label="range input without min or max"
+              name="unranged"
+            ></im-input-range>
+            <im-input-range
+              label="range input with min 10, max 100"
+              name="ranged"
+              max="100"
+              min="10"
+              value="20"
+              step="0.01"
+            ></im-input-range>
+            <button type="submit">submit</button>
           </form>
         </details>
 
