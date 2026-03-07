@@ -11,7 +11,7 @@ export class ImInputCheckbox extends ImInput {
     css`
       :host {
         --size: 20px;
-        --check_offset_top: 0.1lh;
+        --check_offset_top: 0;
         --layout: 'vertical';
       }
 
@@ -70,6 +70,7 @@ export class ImInputCheckbox extends ImInput {
         will-change: background-color;
         transition: background-color 0.1s ease-out;
         pointer-events: none;
+        box-shadow: 0 1px 1px 2px rgba(0, 0, 0, 0.25);
       }
 
       .checkbox-checked {

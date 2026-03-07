@@ -149,6 +149,7 @@ export class ImInputRange extends ImInput {
           border: 0;
           outline: 1px solid var(--border_color);
           border-radius: 4px;
+          box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.2);
 
           &:focus-within {
             outline: 2px solid var(--focus_color);

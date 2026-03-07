@@ -50,7 +50,7 @@ export class ImInput extends LitElement {
         --border_color: hsl(from var(--idle_bg_color) h s calc(l * 0.5));
         --focus_color: #3182ce;
         --error_color: #e93535;
-        --disabled_color: #919191;
+        --disabled_color: #d7d7d7;
         --accent_color: var(--focus_color);
       }
 
@@ -78,13 +78,14 @@ export class ImInput extends LitElement {
         border: 1px solid var(--border_color);
         border-radius: 0.375rem;
         background-color: var(--idle_bg_color);
-        font-size: 0.75rem;
+        font-size: 1rem;
         color: var(--font_color);
         position: relative;
+        box-shadow: 0 1px 2px 1px rgba(0, 0, 0, 0.15);
 
         &:focus-within {
           outline: 2px solid var(--focus_color);
-          box-shadow: 0 0 2px 2px var(--focus_color);
+          box-shadow: 0 1px 1px 2px var(--focus_color);
         }
 
         &:has(:disabled, :read-only) {
@@ -116,6 +117,10 @@ export class ImInput extends LitElement {
 
         &:focus {
           outline: 0;
+        }
+
+        &::placeholder {
+          color: hsl(from var(--font_color) h s calc(l * 1.7));
         }
       }
 
