@@ -79,6 +79,7 @@ export class ImInput extends LitElement {
         background-color: var(--idle_bg_color);
         font-size: 0.75rem;
         color: var(--font_color);
+        position: relative;
 
         &:focus-within {
           outline: 2px solid var(--focus_color);
