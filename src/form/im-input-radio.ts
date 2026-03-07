@@ -62,11 +62,23 @@ export class ImInputRadio extends ImInputCheckbox {
     super();
   }
 
-  init() {}
+  init() {
+    /* Removes inherited init(). */
+  }
 
   inheritAttributes(): void {
     // disable inheriting attributes from ImInputCheckbox, since radio buttons have different styling and behaviour
     return;
+  }
+
+  handleRadioClick(event: PointerEvent): void {
+    const input = event.currentTarget as HTMLInputElement;
+    this.setValue(input.value)
+    this.requestUpdate();
+  }
+
+  firstUpdated(): void {
+    this.setValue();
   }
 
   render() {
@@ -97,8 +109,7 @@ export class ImInputRadio extends ImInputCheckbox {
                 novalidate
                 name=${this.name}
                 id="input-${this.uid}-${opt.value}"
-                @input="${this.handleInput}"
-                @blur="${this.handleInput}"
+                @click="${this.handleRadioClick}"
                 value=${opt.value}
                 class="input"
                 />
