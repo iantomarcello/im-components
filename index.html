@@ -42,7 +42,7 @@
     <div class="container min-h-screen mx-auto grid place-content-center gap-12">
       <h1 class="text-3xl text-center font-semibold uppercase tracking-wider">Component testing ground</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
-        <details open>
+        <details>
           <summary class="summary">Input text</summary>
           <form class="form">
             <p class="text-lg font-bold">Commons</p>
@@ -98,7 +98,7 @@
             <button type="submit"></button>
           </form>
         </details>
-        <details open>
+        <details>
           <summary class="summary">Input Check box and Radios</summary>
           <form class="form">
             <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
@@ -127,7 +127,7 @@
             <button type="submit"></button>
           </form>
         </details>
-        <details open>
+        <details>
           <summary class="summary">Input range, date</summary>
           <form class="form">
             <im-input-range
@@ -156,8 +156,41 @@
               step="0.01"
               showControls
             ></im-input-range>
-            <button type="submit">submit</button>
+            TODO: DATE
+            <button type="submit"></button>
           </form>
+        </details>
+        <details open>
+          <summary class="summary">Tooltip</summary>
+          <p>
+            <span>Hover the icon next to me for tooltip</span>
+            <im-tooltip>
+              I am the tooltip
+            </im-tooltip>
+          </p>
+          <p>
+            <im-tooltip>
+              <span slot="trigger">Hover ME for the tooltip</span>
+              I am the tooltip
+            </im-tooltip>
+          </p>
+          <p class="tooltip-above">
+            <style>
+              @scope (.tooltip-above) {
+                im-tooltip {
+                  --position_area: top center;
+                  &::part(tooltip) {
+                    width: max-content;
+                    background-color: navy;
+                  }
+                }
+              }
+            </style>
+            <span>The tooltip is above</span>
+            <im-tooltip>
+              I am the tooltip
+            </im-tooltip>
+          </p>
         </details>
 
       </div>
