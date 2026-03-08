@@ -136,7 +136,7 @@ export class ImInput extends LitElement {
     return true;
   }
 
-  @query('input') $input!: HTMLInputElement;
+  @query('input,textarea') $input!: HTMLInputElement | HTMLTextAreaElement;
   @property({ type: String, attribute: true })
   label: string = '';
 

@@ -248,11 +248,12 @@ export class ImInputRange extends ImInput {
   firstUpdated(): void {
     super.firstUpdated();
     // Use explicit default of '1' when no `value` attribute is provided
-    this.$input.value =  this.hasAttribute('value') ? (this.getAttribute('value') ?? '1') : '1';
+    const $input = this.$input as HTMLInputElement;
+    $input.value =  this.hasAttribute('value') ? (this.getAttribute('value') ?? '1') : '1';
 
-    this.$inputWrapper.style.setProperty('--min', this.$input.min);
-    this.$inputWrapper.style.setProperty('--max', this.$input.max);
-    this.$inputWrapper.style.setProperty('--value', this.$input.value);
+    this.$inputWrapper.style.setProperty('--min', $input.min);
+    this.$inputWrapper.style.setProperty('--max', $input.max);
+    this.$inputWrapper.style.setProperty('--value', $input.value);
   }
 
   protected render() {
