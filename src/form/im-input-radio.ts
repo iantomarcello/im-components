@@ -71,14 +71,25 @@ export class ImInputRadio extends ImInputCheckbox {
     return;
   }
 
+  setValue(value: string) {
+    super.setValue(value);
+    [...(this.shadowRoot?.querySelectorAll('input') as NodeListOf<HTMLInputElement>)].forEach((input) => {
+      input.removeAttribute('checked');
+    })
+    const input = this.shadowRoot?.querySelector(`[value=${value}]`) as HTMLInputElement;
+    if (input) {
+      input.setAttribute('checked', '')
+    }
+  }
+
   handleRadioClick(event: PointerEvent): void {
     const input = event.currentTarget as HTMLInputElement;
-    this.setValue(input.value)
+    super.setValue(input.value)
     this.requestUpdate();
   }
 
   firstUpdated(): void {
-    this.setValue();
+    super.setValue();
   }
 
   render() {
