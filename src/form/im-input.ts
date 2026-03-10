@@ -156,9 +156,6 @@ export class ImInput extends LitElement {
 
   internals: ElementInternals;
 
-  @property({ type: Boolean })
-  invalid?: boolean = false;
-
   @state()
   uid: number = crypto.getRandomValues(new Uint8Array(1))[0];
 
@@ -168,6 +165,7 @@ export class ImInput extends LitElement {
   }
 
   setValue(value = this.$input.value) {
+    this.$input.value = value;
     this.internals.setFormValue(value);
     this.internals.setValidity(
       this.$input.validity,
