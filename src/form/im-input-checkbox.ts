@@ -14,6 +14,15 @@ export class ImInputCheckbox extends ImInput {
         --check_offset_top: 0;
       }
 
+      :host([required]) {
+        .label-wrapper {
+          .label::before {
+            content: '*';
+            color: var(--error_color, #e53e3e);
+          }
+        }
+      }
+
       .field {
         position: relative;
       }

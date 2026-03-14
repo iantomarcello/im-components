@@ -62,7 +62,7 @@ export class ImInput extends LitElement {
 
       .label-wrapper {
         &:has(+ .input-wrapper [required]) {
-          .label::after {
+          .label::before {
             content: '*';
             color: var(--error_color, #e53e3e);
           }
