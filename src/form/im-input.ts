@@ -164,6 +164,10 @@ export class ImInput extends LitElement {
     this.internals = this.attachInternals && this.attachInternals();
   }
 
+  get value() {
+    return this.$input?.value ?? null;
+  }
+
   setValue(value = this.$input.value) {
     this.$input.value = value;
     this.internals.setFormValue(value);
