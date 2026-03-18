@@ -49,22 +49,12 @@ export class ImInputRadio extends ImInputCheckbox {
     `,
   ];
 
-  @property({ type: String })
-  name = '';
-
-  @property({ type: Boolean })
-  required = false;
 
   @property({ type: Array })
   options: ImOption[] = [];
 
   constructor() {
     super();
-  }
-
-  get value() {
-    const input = this.shadowRoot?.querySelector('input:checked') as HTMLInputElement;
-    return input?.value ?? '';
   }
 
   init() {

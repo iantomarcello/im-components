@@ -1,6 +1,8 @@
 import { html, css } from 'lit';
-import { customElement, query } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { ImInput } from './im-input';
+import { ifDefined } from 'lit/directives/if-defined.js';
+
 
 @customElement('im-textarea')
 export class ImTextarea extends ImInput {
@@ -30,6 +32,12 @@ export class ImTextarea extends ImInput {
           @blur="${this.handleInput}"
           class="input"
           part="input"
+          minlength=${ifDefined(this.minlength ? this.minlength : undefined)}
+          maxlength=${ifDefined(this.maxlength ? this.maxlength : undefined)}
+          .placeholder=${this.placeholder}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          ?readonly=${this.readonly}
         ></textarea>
       </div>
       ${ !this.internals?.validity?.valid ?

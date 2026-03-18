@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import type { ElementInternals } from 'element-internals-polyfill/dist/element-internals';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 /**
  * Form-associated input web component.
@@ -140,6 +141,9 @@ export class ImInput extends LitElement {
   @property({ type: String, attribute: true })
   label: string = '';
 
+  @property({ type: String, attribute: true })
+  name: string = '';
+
   /**
    * Custom validation messages.
    * Keys are ValidityState
@@ -159,47 +163,53 @@ export class ImInput extends LitElement {
   @state()
   uid: number = crypto.getRandomValues(new Uint8Array(1))[0];
 
+  @property({ type: String, attribute: true })
+  type: string = 'text';
+
+  @property({ type: String, attribute: true })
+  value: string = '';
+
+  @property({ type: Number, attribute: true })
+  maxlength: number | null = null;
+
+  @property({ type: Number, attribute: true })
+  minlength: number | null = null;
+
+  @property({ type: Number, attribute: true })
+  max: number | null = null;
+
+  @property({ type: Number, attribute: true })
+  min: number | null = null;
+
+  @property({ type: Boolean, reflect: true })
+  required: boolean = false;
+
+  @property({ type: Boolean, reflect: true })
+  disabled: boolean = false;
+
+  @property({ type: Boolean, reflect: true })
+  readonly: boolean = false;
+
+  @property({ type: String, attribute: true })
+  placeholder: string = '';
+
   constructor() {
     super();
     this.internals = this.attachInternals && this.attachInternals();
   }
 
-  get value() {
-    return this.$input?.value ?? null;
-  }
-
   setValue(value = this.$input.value) {
-    this.$input.value = value;
     this.internals.setFormValue(value);
     this.internals.setValidity(
       this.$input.validity,
       this.$input.validationMessage,
       this.$input
     );
-    this.internals.checkValidity();
   }
 
   handleInput() {
     this.setValue();
     this.requestUpdate();
-  }
-
-  get attributesNotInherited() {
-    return ['label', 'class'];
-  }
-
-  inheritAttributes() {
-    Object.keys(this.attributes).forEach((keyAsString: string) => {
-      const key = parseFloat(keyAsString);
-
-      // Skips @properties
-      if ([...this.attributesNotInherited].includes(this.attributes[key].name)) {
-        return;
-      }
-
-      if (typeof key === 'number')
-        this.$input.setAttribute(this.attributes[key].name, this.attributes[key].value);
-    })
   }
 
   getError() {
@@ -210,20 +220,12 @@ export class ImInput extends LitElement {
       });
   }
 
-  static get observedAttributes() {
-    return [...super.observedAttributes, 'value']; // Include Lit's and custom attributes
+  init() {
+    this.setValue();
   }
 
   firstUpdated() {
-    this.inheritAttributes();
-    this.setValue();
-    const value = this.getAttribute('value') ?? '';
-    this.$input.value = value;
-    this.internals.setFormValue(value);
-  }
-
-  attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null) {
-    super.attributeChangedCallback(name, oldVal, newVal); 
+    this.init();
   }
 
   protected render() {
@@ -242,6 +244,16 @@ export class ImInput extends LitElement {
           @blur="${this.handleInput}"
           class="input"
           part="input"
+          .type=${this.type}
+          .value=${this.value}
+          minlength=${ifDefined(this.minlength ? this.minlength : undefined)}
+          maxlength=${ifDefined(this.maxlength ? this.maxlength : undefined)}
+          min=${ifDefined(this.min ? this.min : undefined)}
+          max=${ifDefined(this.max ? this.max : undefined)}
+          .placeholder=${this.placeholder}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          ?readonly=${this.readonly}
           />
       </div>
       ${ !this.internals?.validity?.valid ?
