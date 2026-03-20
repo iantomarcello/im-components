@@ -102,6 +102,7 @@ export class ImInputCheckbox extends ImInput {
         height: var(--size);
         position: relative;
         flex-shrink: 0;
+        pointer-events" none;
       }
 
       .input-wrapper {

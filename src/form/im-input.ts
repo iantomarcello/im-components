@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css, type PropertyValues } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import type { ElementInternals } from 'element-internals-polyfill/dist/element-internals';
@@ -199,17 +199,17 @@ export class ImInput extends LitElement {
   }
 
   setValue(value = this.$input.value) {
-    this.internals.setFormValue(value);
-    this.internals.setValidity(
-      this.$input.validity,
-      this.$input.validationMessage,
+    this.internals?.setFormValue(value);
+    this.internals?.setValidity(
+      this.$input?.validity as any,
+      this.$input?.validationMessage,
       this.$input
     );
   }
 
-  handleInput() {
-    this.setValue();
-    this.requestUpdate();
+  handleInput(event: InputEvent) {
+    this.value = (event.currentTarget as HTMLInputElement)?.value ?? this.value;
+    this.setValue(this.value);
   }
 
   getError() {
@@ -226,6 +226,15 @@ export class ImInput extends LitElement {
 
   firstUpdated() {
     this.init();
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('value')) {
+      if (this.$input && (this.$input as HTMLInputElement | HTMLTextAreaElement).value !== this.value) {
+        (this.$input as HTMLInputElement | HTMLTextAreaElement).value = this.value;
+      }
+      this.setValue(this.value);
+    }
   }
 
   protected render() {

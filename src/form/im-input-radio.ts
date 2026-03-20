@@ -57,36 +57,6 @@ export class ImInputRadio extends ImInputCheckbox {
     super();
   }
 
-  init() {
-    /* Removes inherited init(). */
-  }
-
-  inheritAttributes(): void {
-    // disable inheriting attributes from ImInputCheckbox, since radio buttons have different styling and behaviour
-    return;
-  }
-
-  setValue(value: string) {
-    super.setValue(value);
-    [...(this.shadowRoot?.querySelectorAll('input') as NodeListOf<HTMLInputElement>)].forEach((input) => {
-      input.removeAttribute('checked');
-    })
-    const input = this.shadowRoot?.querySelector(`[value=${value}]`) as HTMLInputElement;
-    if (input) {
-      input.setAttribute('checked', '')
-    }
-  }
-
-  handleRadioClick(event: PointerEvent): void {
-    const input = event.currentTarget as HTMLInputElement;
-    super.setValue(input.value)
-    this.requestUpdate();
-  }
-
-  firstUpdated(): void {
-    super.setValue();
-  }
-
   render() {
     return html`<div class="field" part="field">
       <div class="label-wrapper" part="label">
@@ -115,13 +85,14 @@ export class ImInputRadio extends ImInputCheckbox {
                 novalidate
                 name=${this.name}
                 id="input-${this.uid}-${opt.value}"
-                @click="${this.handleRadioClick}"
+                @click="${this.handleInput}"
                 value=${opt.value}
                 class="input"
+                ?checked=${this.value === opt.value}
                 />
             </div>
           </div>
-          `
+        `
     )}
       </div>
       ${!this.internals?.validity?.valid ?
@@ -129,7 +100,7 @@ export class ImInputRadio extends ImInputCheckbox {
           ${this.getError().length ? this.getError() : this.internals.validationMessage}
         </p>` : null
       }
-        </div>`;
+    </div>`;
   }
 }
 

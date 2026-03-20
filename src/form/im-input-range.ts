@@ -205,10 +205,6 @@ export class ImInputRange extends ImInput {
     super();
   }
 
-  get attributesNotInherited() {
-    return [...super.attributesNotInherited, 'type'];
-  }
-
   setValue() {
     super.setValue();
     // Keep CSS var in sync with the inner input's current value

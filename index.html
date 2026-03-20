@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta id="viewport" content="width=device-width, initial-scale=1.0" />
     <title>im-components</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
@@ -48,12 +49,14 @@
             <p class="text-lg font-bold">Commons</p>
             <im-input
               label="This is a plain label"
-              name="plain label"
+              name="plain_label"
+              id="plain_label"
               placeholder="The placeholder works"
             ></im-input>
             <im-input
               label="I am disabled"
               name="disabled"
+              id="disabled"
               placeholder="Oh noes, cannot enter value!"
               disabled
               value="I has value but I should not be submitted"
@@ -61,16 +64,19 @@
             <im-input
               label="I am readonly!"
               name="readonly"
+              id="readonly"
               value="Please read"
               readonly
             ></im-input>
             <im-input
               label="I am have a default value"
               name="with_value"
+              id="with_value"
               value="Cheese cake"
             ></im-input>
             <im-input
               name="custom_label"
+              id="custom_label"
               placeholder="This field has custom label"
               class="[&::part(label)]:text-blue-400 [&::part(input-wrapper)]:bg-blue-300"
             >
@@ -82,12 +88,13 @@
           </form>
           <form class="form">
             <p class="text-lg font-bold">Errors</p>
-            <im-input name="required" required>
+            <im-input name="required" id="required" required>
               <span slot="label">I need required</span>
             </im-input>
             <im-input
               label="I have max length and invalid pattern"
               name="errors"
+              id="errors"
               value="definitely not a number and longer than it should be"
               pattern="^[\d]*$"
               maxlength="4"
@@ -95,29 +102,31 @@
             <im-input
               label="I have custom required message"
               name="custom_required"
+              id="custom_required"
               required
               errors='{"valueMissing": "You must fill out this field!"}'
             ></im-input>
             <button type="submit"></button>
           </form>
         </details>
-        <details>
+        <details open>
           <summary class="summary">Input Check box and Radios</summary>
           <form class="form">
             <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
-            <im-input-checkbox name="pp" required>
+            <im-input-checkbox id="tnc" label="Terms and Condition apply"></im-input-checkbox>
+            <im-input-checkbox name="pp" id="pp" required>
               <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
               </span>
             </im-input-checkbox>
-            <im-input-checkbox name="disabled" label="I am disabled" disabled></im-input-checkbox>
-            <im-input-radio name="gender" label="Gender" required
+            <im-input-checkbox name="disabled" id="disabled" label="I am disabled" disabled></im-input-checkbox>
+            <im-input-radio name="gender" label="Gender" id="gender" required
               options='[
                 { "value": "male", "label": "Male <small>lelaki!</small>" },
                 { "value": "female", "label": "Female <small>perempuan!</small>" },
                 { "value": "other", "label": "Other" }
               ]'
             ></im-input-radio>
-            <im-input-radio name="fruit" required
+            <im-input-radio name="fruit" required id="fruit"
               style="--layout: no-horizontal"
               options='[
                 { "value": "Apple", "label": "Apple <small>🍎</small>" },
@@ -130,16 +139,18 @@
             <button type="submit"></button>
           </form>
         </details>
-        <details>
+        <details open>
           <summary class="summary">Input range, date, Textarea</summary>
           <form class="form">
             <im-input-range
               label="range input without min or max"
               name="unranged"
+              id="unranged"
             ></im-input-range>
             <im-input-range
               label="range input with min 10, max 100"
               name="ranged"
+              id="ranged"
               max="100"
               min="10"
               value="20"
@@ -148,11 +159,13 @@
             <im-input-range
               label="range input with tooltip to display current value"
               name="tooltip"
+              id="tooltip"
               showTooltip
             ></im-input-range>
             <im-input-range
               label="range input with buttons to increment or decrement"
               name="buttons"
+              id="buttons"
               max="100"
               min="10"
               value="20"
