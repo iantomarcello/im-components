@@ -24,6 +24,8 @@ export class ImInputRadio extends ImInputCheckbox {
       }
 
       .input-row {
+        position: relative;
+
         &:has(:checked) {
           .checkbox-idle {
             background-color: transparent;
@@ -55,6 +57,10 @@ export class ImInputRadio extends ImInputCheckbox {
 
   constructor() {
     super();
+  }
+
+  init() {
+    /* Removes type to checkbox init(). */
   }
 
   render() {
@@ -95,7 +101,7 @@ export class ImInputRadio extends ImInputCheckbox {
         `
     )}
       </div>
-      ${!this.internals?.validity?.valid ?
+      ${!this.internals?.validity?.valid && this.touched ?
         html`<p class="errors" part="errors">
           ${this.getError().length ? this.getError() : this.internals.validationMessage}
         </p>` : null

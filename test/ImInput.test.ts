@@ -274,8 +274,11 @@ describe('ImInput component', () => {
     expect(input.value).toBe('attr-val');
 
     im.value = 'prop-val';
-    input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true } as any));
+    im.value = 'prop-val';
     await nextFrame();
-    expect(input.value).toBe('prop-val');
+    const inputAfter = getInnerInput(im)!;
+    inputAfter.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true } as any));
+    await nextFrame();
+    expect(inputAfter.value).toBe('prop-val');
   });
 });

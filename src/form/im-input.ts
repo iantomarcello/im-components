@@ -158,10 +158,12 @@ export class ImInput extends LitElement {
   @property({ type: Object, attribute: true })
   errors: Record<string, string> = {};
 
-  internals: ElementInternals;
+  @state() internals: ElementInternals;
 
-  @state()
   uid: number = crypto.getRandomValues(new Uint8Array(1))[0];
+
+  validity: Partial<ValidityState> = {};
+  @state() touched = false;
 
   @property({ type: String, attribute: true })
   type: string = 'text';
@@ -200,6 +202,7 @@ export class ImInput extends LitElement {
 
   setValue(value = this.$input.value) {
     this.internals?.setFormValue(value);
+    this.validity = this.$input?.validity;
     this.internals?.setValidity(
       this.$input?.validity as any,
       this.$input?.validationMessage,
@@ -210,6 +213,7 @@ export class ImInput extends LitElement {
   handleInput(event: InputEvent) {
     this.value = (event.currentTarget as HTMLInputElement)?.value ?? this.value;
     this.setValue(this.value);
+    this.touched = true;
   }
 
   getError() {
@@ -220,8 +224,11 @@ export class ImInput extends LitElement {
       });
   }
 
+  // TODO: maxlength doesn't trigger validation
+
   init() {
-    this.setValue();
+    // NOTE: sets fields into form on connect.
+    this.internals?.setFormValue(this.value);
   }
 
   firstUpdated() {
@@ -265,7 +272,7 @@ export class ImInput extends LitElement {
           ?readonly=${this.readonly}
           />
       </div>
-      ${ !this.internals?.validity?.valid ?
+      ${ !this.validity?.valid && this.touched ?
         html`<p class="errors" part="errors">
           ${ this.getError().length ? this.getError() : this.internals.validationMessage }
         </p>` : null
