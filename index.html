@@ -171,6 +171,7 @@
               value="20"
               step="0.01"
               showTooltip
+              required
             ></im-input-range>
             <im-input-range
               label="range input with tooltip to display current value"
@@ -180,8 +181,8 @@
             ></im-input-range>
             <im-input-range
               label="range input with buttons to increment or decrement with steps"
-              name="buttons"
-              id="buttons"
+              name="ranged_buttons_step"
+              id="ranged_buttons_step"
               max="100"
               min="10"
               value="20"
@@ -196,6 +197,16 @@
               min="10"
               value="20"
               showControls
+            ></im-input-range>
+            <im-input-range
+              label="Disabled range input"
+              name="range_disabled"
+              id="range_disabled"
+              max="100"
+              min="10"
+              value="20"
+              showControls
+              disabled
             ></im-input-range>
 
             <im-textarea label="I am a textarea!" name="textarea" id="textarea"></im-textarea>

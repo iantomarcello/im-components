@@ -13,7 +13,7 @@ export class ImInputRange extends ImInput {
         --track_border_radius: 50px;
         --track_height: 0.5rem;
         --track_foreground_color: var(--accent_color);
-        --track_background_color: hsl(from var(--accent_color) h calc(s * 0.7) calc(l * 1.7));
+        --track_background_color: hsla(from var(--accent_color) h calc(s * 0.5) calc(l * 1) / 0.4);
 
         --thumb_color: var(--accent_color);
         --thumb_width: 1rem;
@@ -27,6 +27,10 @@ export class ImInputRange extends ImInput {
 
         --thumb_focus_outline: 3px solid var(--accent_color);
         --thumb_focus_offset: 0.125rem;
+      }
+
+      :host:has(:disabled) {
+        --accent_color: var(--disabled_color);
       }
 
       .field {
@@ -156,6 +160,11 @@ export class ImInputRange extends ImInput {
             outline: 2px solid var(--focus_color);
             box-shadow: 0 0 2px 2px var(--focus_color);
           }
+
+          &:disabled {
+            background-color: var(--disabled_color);
+            pointer-events: none;
+          }
         }
 
         button {
@@ -266,24 +275,27 @@ export class ImInputRange extends ImInput {
       <div class="input-wrapper" part="input-wrapper">
         <!-- defaults min max to 0 and 100 -->
         <input
-          type="range"
           novalidate
+          type="range"
           id="input-${this.uid}"
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
+          .value=${this.value}
           class="input"
-          step=${ifDefined(this.step ? this.step : 1)}
+          part="input"
           min=${ifDefined(this.min ? this.min : 1)}
           max=${ifDefined(this.max ? this.max : 100)}
-          .value=${this.value}
-          part="input"
+          step=${ifDefined(this.step ? this.step : 1)}
+          ?disabled=${this.disabled}
+          ?required=${this.required}
+          ?readonly=${this.readonly}
           />
 
           ${ !this.showTooltip ? '' : html`<span class="tooltip-anchor"></span>
             <span class="tooltip" part="tooltip">${this.value ?? '1' }</span>` }
           ${ !this.showControls ? '' : html`
             <div class="control" part="control">
-              <button part="control_button decrement" value="-" @click=${this.onControlButtonClick}>
+              <button part="control_button decrement" value="-" @click=${this.onControlButtonClick} ?disabled=${this.disabled}>
                 <slot name="control_button_decrement">-</slot>
               </button>
               <input
@@ -292,9 +304,13 @@ export class ImInputRange extends ImInput {
                 .value=${this.value ?? '1'}
                 @input="${this.handleInput}"
                 @blur="${this.handleInput}"
+                min=${ifDefined(this.min ? this.min : 1)}
+                max=${ifDefined(this.max ? this.max : 100)}
+                step=${ifDefined(this.step ? this.step : 1)}
+                ?disabled=${this.disabled}
                 part="control_input"
               >
-              <button part="control_button increment" value="+" @click=${this.onControlButtonClick}>
+              <button part="control_button increment" value="+" @click=${this.onControlButtonClick} ?disabled=${this.disabled}>
                 <slot name="control_button_increment">+</slot>
               </button>
             </div>
