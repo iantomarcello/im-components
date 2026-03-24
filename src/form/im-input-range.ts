@@ -209,8 +209,8 @@ export class ImInputRange extends ImInput {
     super();
   }
 
-  setValue() {
-    super.setValue();
+  setValue(value = this.$input.value) {
+    super.setValue(value);
     // Keep CSS var in sync with the inner input's current value
     this.$inputWrapper.style.setProperty('--value', this.$input.value);
   }
@@ -228,14 +228,15 @@ export class ImInputRange extends ImInput {
     const button = event.currentTarget as HTMLButtonElement;
     if (!button) return;
 
-    let step = parseFloat(this.$input.getAttribute('step') ?? '1');
+    let step = this.step ?? 1;
     step *= event.ctrlKey ? 10 : 1;
     step *= event.shiftKey ? 100 : 1;
     step *= event.altKey ? 0.1 : 1;
+    const significantPlaces = step.toString()?.split('.')[1]?.length ?? 0;
     if (button.value === '+') {
-      this.$input.value = (parseFloat(this.$input.value) + step).toString();
+      this.value = (parseFloat(this.value) + step).toFixed(significantPlaces);
     } else {
-      this.$input.value = (parseFloat(this.$input.value) - step).toString();
+      this.value = (parseFloat(this.value) - step).toFixed(significantPlaces);
     }
     this.setValue();
     this.requestUpdate();
@@ -249,8 +250,6 @@ export class ImInputRange extends ImInput {
     super.firstUpdated();
     // Use explicit default of '1' when no `value` attribute is provided
     const $input = this.$input as HTMLInputElement;
-    $input.value =  this.hasAttribute('value') ? (this.getAttribute('value') ?? '1') : '1';
-
     this.$inputWrapper.style.setProperty('--min', $input.min);
     this.$inputWrapper.style.setProperty('--max', $input.max);
     this.$inputWrapper.style.setProperty('--value', $input.value);
