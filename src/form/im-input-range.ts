@@ -2,6 +2,7 @@ import { html, css } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
+import { ifDefined } from 'lit/directives/if-defined.js';
 
 @customElement('im-input-range')
 export class ImInputRange extends ImInput {
@@ -191,6 +192,9 @@ export class ImInputRange extends ImInput {
     `,
   ];
 
+  /** Similar to HTMLInputElement range `step` attribute */
+  @property({ type: Number}) step = 1;
+
   /** Displays a tooltip that shows the current value. */
   @property({ type: Boolean })
   showTooltip = false;
@@ -269,14 +273,15 @@ export class ImInputRange extends ImInput {
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
           class="input"
-          min="0"
-          max="100"
-          value="1"
+          step=${ifDefined(this.step ? this.step : 1)}
+          min=${ifDefined(this.min ? this.min : 1)}
+          max=${ifDefined(this.max ? this.max : 100)}
+          .value=${this.value}
           part="input"
           />
 
           ${ !this.showTooltip ? '' : html`<span class="tooltip-anchor"></span>
-            <span class="tooltip" part="tooltip">${this.$input?.value ?? this.getAttribute('value') ?? '1' }</span>` }
+            <span class="tooltip" part="tooltip">${this.value ?? '1' }</span>` }
           ${ !this.showControls ? '' : html`
             <div class="control" part="control">
               <button part="control_button decrement" value="-" @click=${this.onControlButtonClick}>
@@ -285,9 +290,10 @@ export class ImInputRange extends ImInput {
               <input
                 id="input-${this.uid}-control"
                 type="number"
-                .value=${this.$input?.value ?? this.getAttribute('value') ?? '1'}
+                .value=${this.value ?? '1'}
                 @input="${this.handleInput}"
                 @blur="${this.handleInput}"
+                part="control_input"
               >
               <button part="control_button increment" value="+" @click=${this.onControlButtonClick}>
                 <slot name="control_button_increment">+</slot>
