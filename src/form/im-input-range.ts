@@ -242,13 +242,25 @@ export class ImInputRange extends ImInput {
     step *= event.shiftKey ? 100 : 1;
     step *= event.altKey ? 0.1 : 1;
     const significantPlaces = step.toString()?.split('.')[1]?.length ?? 0;
+    let value = this.value;
     if (button.value === '+') {
-      this.value = (parseFloat(this.value) + step).toFixed(significantPlaces);
+     value = (parseFloat(this.value) + step).toFixed(significantPlaces);
     } else {
-      this.value = (parseFloat(this.value) - step).toFixed(significantPlaces);
+     value = (parseFloat(this.value) - step).toFixed(significantPlaces);
     }
+    const modValue = parseFloat(value);
+    const min = parseFloat(this.min?.toString() ?? '0');
+    const max = parseFloat(this.max?.toString() ?? '0');
+    if ( min > modValue || modValue > max ) {
+      return;
+    }
+    this.value = modValue.toString();
     this.setValue();
     this.requestUpdate();
+    // NOTE: short delay for component to update.
+    setTimeout(() => {
+      this.dispatchEvent(new Event('input', { bubbles: true }));
+    }, 0);
   }
 
   /* ------------ */
