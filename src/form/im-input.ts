@@ -214,6 +214,7 @@ export class ImInput extends LitElement {
     this.value = (event.currentTarget as HTMLInputElement)?.value ?? this.value;
     this.setValue(this.value);
     this.touched = true;
+    this.dispatchEvent(new Event('input', { bubbles: true }));
   }
 
   getError() {
@@ -258,6 +259,7 @@ export class ImInput extends LitElement {
           id="input-${this.uid}"
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
+          @change=${() => this.dispatchEvent(new Event('change', { bubbles: true }))}
           class="input"
           part="input"
           .type=${this.type}

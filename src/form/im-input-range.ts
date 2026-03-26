@@ -260,6 +260,7 @@ export class ImInputRange extends ImInput {
     // NOTE: short delay for component to update.
     setTimeout(() => {
       this.dispatchEvent(new Event('input', { bubbles: true }));
+      this.dispatchEvent(new Event('change', { bubbles: true }));
     }, 0);
   }
 
@@ -292,6 +293,7 @@ export class ImInputRange extends ImInput {
           id="input-${this.uid}"
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
+          @change=${() => this.dispatchEvent(new Event('change', { bubbles: true }))}
           .value=${this.value}
           class="input"
           part="input"
@@ -314,11 +316,11 @@ export class ImInputRange extends ImInput {
                 id="input-${this.uid}-control"
                 type="number"
                 .value=${this.value ?? '1'}
-                @input="${this.handleInput}"
                 @blur="${this.handleInput}"
                 min=${ifDefined(this.min ? this.min : 1)}
                 max=${ifDefined(this.max ? this.max : 100)}
                 step=${ifDefined(this.step ? this.step : 1)}
+                @change=${() => this.dispatchEvent(new Event('change', { bubbles: true}))}
                 ?disabled=${this.disabled}
                 part="control_input"
               >

@@ -83,7 +83,6 @@ export class ImInputRadio extends ImInputCheckbox {
               .innerHTML=${opt.label}
             >
             </label>
-
             <div class="input-wrapper" part="input">
               <input
                 ?required=${this.required}

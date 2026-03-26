@@ -30,6 +30,7 @@ export class ImTextarea extends ImInput {
           id="input-${this.uid}"
           @input="${this.handleInput}"
           @blur="${this.handleInput}"
+          @change=${() => this.dispatchEvent(new Event('change', { bubbles: true }))}
           class="input"
           part="input"
           minlength=${ifDefined(this.minlength ? this.minlength : undefined)}
