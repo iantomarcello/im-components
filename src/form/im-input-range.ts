@@ -258,10 +258,8 @@ export class ImInputRange extends ImInput {
     this.setValue();
     this.requestUpdate();
     // NOTE: short delay for component to update.
-    setTimeout(() => {
-      this.dispatchEvent(new Event('input', { bubbles: true }));
-      this.dispatchEvent(new Event('change', { bubbles: true }));
-    }, 0);
+    setTimeout(() => this.dispatchEvent(new Event('input', { bubbles: true })), 1);
+    setTimeout(() => this.dispatchEvent(new Event('change', { bubbles: true })), 10);
   }
 
   /* ------------ */
