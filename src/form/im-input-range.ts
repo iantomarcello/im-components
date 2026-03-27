@@ -1,4 +1,4 @@
-import { html, css } from 'lit';
+import { html, css, type PropertyValues } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
@@ -276,6 +276,17 @@ export class ImInputRange extends ImInput {
     this.$inputWrapper.style.setProperty('--max', $input.max);
     this.$inputWrapper.style.setProperty('--value', $input.value);
   }
+
+    protected updated(changedProperties: PropertyValues): void {
+      super.update(changedProperties);
+      const $input = this.$input as HTMLInputElement;
+      if (changedProperties.has('max'))
+        this.$inputWrapper.style.setProperty('--max', $input.max);
+      if (changedProperties.has('min'))
+        this.$inputWrapper.style.setProperty('--min', $input.min);
+      if (changedProperties.has('value'))
+        this.$inputWrapper.style.setProperty('--value', $input.value);
+    }
 
   protected render() {
     return html`<div class="field" part="field">
