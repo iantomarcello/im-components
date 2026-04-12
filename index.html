@@ -8,7 +8,7 @@
     <title>im-components</title>
     <link rel="stylesheet" href="./src/index.css" />
     <script type="module" src="/src/index.ts"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
       .form {
         width: 100%;
@@ -19,16 +19,22 @@
         * {
           grid-column: span 12;
         }
+      }
 
-        button[type="submit"] {
-          padding-block: 0.5rem;
-          background-color: navy;
-          border-radius: 8px;
-          color: white;
+      .button {
+        padding-block: 0.5rem;
+        padding-inline: 0.75rem;
+        background-color: navy;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
 
-          &::before {
-            content: "Submit and print on console!";
-          }
+        &[type="submit"]::before {
+          content: "Submit and print on console!";
+        }
+
+        &:hover {
+          opacity: 0.8;
         }
       }
 
@@ -59,7 +65,7 @@
       <h1 class="text-3xl text-center font-semibold uppercase tracking-wider">Component testing ground</h1>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
         <details open>
-          <summary class="summary">Input text</summary>
+          <summary id="input-text" class="summary anchor">Input text</summary>
           <form class="form">
             <p class="text-lg font-bold">Commons</p>
             <im-input
@@ -99,7 +105,7 @@
                 >I am a custom label, styled with Tailwind as well</span
               >
             </im-input>
-            <button type="submit"></button>
+            <button type="submit" class="button"></button>
           </form>
           <form class="form">
             <p class="text-lg font-bold">Errors</p>
@@ -121,14 +127,13 @@
               required
               errors='{"valueMissing": "You must fill out this field!"}'
             ></im-input>
-            <button type="submit"></button>
+            <button type="submit" class="button"></button>
           </form>
         </details>
         <details open>
-          <summary class="summary">Input Check box and Radios</summary>
+          <summary id="input-checkbox-radio" class="summary anchor">Input Check box and Radios</summary>
           <form class="form">
-            <im-input-checkbox name="tnc" label="Terms and Condition apply"></im-input-checkbox>
-            <im-input-checkbox id="tnc" label="Terms and Condition apply"></im-input-checkbox>
+            <im-input-checkbox name="tnc" id="tnc" label="Terms and Condition apply"></im-input-checkbox>
             <im-input-checkbox name="pp" id="pp" required>
               <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
               </span>
@@ -151,7 +156,7 @@
             >
               <span slot="label">Fruits! <small>With vertical layout</small></span>
             </im-input-radio>
-            <button type="submit"></button>
+            <button type="submit" class="button"></button>
           </form>
         </details>
         <details open>
@@ -212,11 +217,11 @@
             <im-textarea label="I am a textarea!" name="textarea" id="textarea"></im-textarea>
 
             TODO: DATE
-            <button type="submit"></button>
+            <button type="submit" class="button"></button>
           </form>
         </details>
         <details>
-          <summary class="summary">Tooltip</summary>
+          <summary id="tooltip" class="summary anchor">Tooltip</summary>
           <p>
             <span>Hover the icon next to me for tooltip</span>
             <im-tooltip>
@@ -248,7 +253,8 @@
           </p>
         </details>
       </div>
-      <h1>Cards</h1>
+      <hr>
+      <h1 id="cards" class="anchor">Cards</h1>
       <div class="resizable">
         <im-card imgSrc="https://images.unsplash.com/photo-1579168765467-3b235f938439?w=200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8ZmF0JTIwY2F0fGVufDB8fDB8fHww">
           <b slot="label">This is a title</b>
@@ -279,6 +285,70 @@
           </div>
         </im-card>
       </div>
+      <hr>
+      <h1 id="toasts" class="anchor">Toasts</h1>
+      <im-toast id="toast"></im-toast>
+      <div class="flex gap-4 justify-center items-center my-6">
+        <button type="button" class="button bg-green-700!" onclick="toast.addToast('This is a success toast!', 'success', null)">Show Success Toast</button>
+        <button type="button" class="button bg-yellow-700!" onclick="toast.addToast('This is a warning toast!', 'warning', null)">Show Warning Toast</button>
+        <button type="button" class="button bg-red-700!" onclick="toast.addToast('This is an error toast!', 'error', null)">Show Error Toast</button>
+        <button type="button" class="button bg-blue-700!" onclick="toast.addToast('This is an info toast!', 'info', null)">Show Info Toast</button>
+        <span>|</span>
+        <button type="button" class="button" onclick="promptToast()">Show Random Toast</button>
+      </div>
+      <form id="toastControl" class="form">
+        <im-input-radio name="position_x" label="Toast Position X" value="center"
+          options='[
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ]'
+        ></im-input-radio>
+        <im-input-radio name="position_y" label="Toast Position Y" value="top"
+          options='[
+            { "value": "top", "label": "Top" },
+            { "value": "center", "label": "Center" },
+            { "value": "bottom", "label": "Bottom" }
+          ]'
+        ></im-input-radio>
+      </form>
+      <script>
+        function promptToast(type = null, message = null) {
+          const randomBiscuitMessages = [
+            'You have a new message!',
+            'Your download is ready.',
+            'You have been logged out due to inactivity.',
+            'Your session will expire in 5 minutes.',
+            'New comment on your post.',
+            'Your password has been changed successfully.',
+            'Congratulation, you just prompted a toast with a longer message.',
+            'You have a meeting at 3 PM.',
+            'Your order has been shipped.',
+            'You have a new friend request.',
+            'Your subscription will renew tomorrow.'
+          ];
+          toast.addToast(
+            message ?? randomBiscuitMessages[Math.floor(Math.random() * randomBiscuitMessages.length)],
+            type ?? ['success', 'warning', 'error', 'info'][Math.floor(Math.random() * 4)],
+            null
+          );
+        }
+
+        toastControl.querySelectorAll('im-input-radio').forEach((radio) => {
+          radio.addEventListener('input', (e) => {
+            console.log(radio.value);
+            
+            const formData = new FormData(toastControl);
+            const { position_x, position_y } = Object.fromEntries(formData.entries());
+            toast.style.setProperty('--position-x', position_x);
+            toast.style.setProperty('--position-y', position_y);
+          });
+        })
+
+        setTimeout(() => {
+          // new Array(4).fill().forEach(_ => promptToast());
+        }, 100);
+      </script>
     </div>
     <script>
       const forms = document.querySelectorAll('form');
