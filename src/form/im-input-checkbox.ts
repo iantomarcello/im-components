@@ -1,8 +1,7 @@
-import { html, css } from 'lit';
+import { html, css, type PropertyValues } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
-
 
 @customElement('im-input-checkbox')
 export class ImInputCheckbox extends ImInput {
@@ -134,12 +133,19 @@ export class ImInputCheckbox extends ImInput {
   }
 
   init() {
+    this.type = 'checkbox';
     this.$input.setAttribute('type', 'checkbox');
   }
 
   firstUpdated(): void {
     super.firstUpdated();
     this.init();
+  }
+
+  protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('value')) {
+      this.setValue(this.value);
+    }
   }
 
   protected render() {
@@ -159,15 +165,19 @@ export class ImInputCheckbox extends ImInput {
           <div class="input-wrapper" part="input">
             <input
               novalidate
+              type="checkbox"
               id="input-${this.uid}"
               @input="${this.handleInput}"
               @blur="${this.handleInput}"
               class="input"
+              ?checked=${this.value === 'on' || this.value === 'true'}
+              ?required=${this.required}
+              ?disabled=${this.disabled}
               />
           </div>
         </div>
       </div>
-      ${ !this.internals?.validity?.valid ?
+      ${ !this.internals?.validity?.valid && this.touched ?
         html`<p class="errors" part="errors">
           ${ this.getError().length ? this.getError() : this.internals.validationMessage }
         </p>` : null
