@@ -92,6 +92,14 @@ export class ImSelect extends ImInput {
         --picker_opacity_duration: 0.2s;
       }
 
+      /* Reset inherited styles from ImInput */
+      .input-wrapper {
+        &:has(:disabled, :read-only) {
+          background-color: initial;
+          border: initial;
+        }
+      }
+
       @supports not (appearance: base-select) {
         .input-wrapper {
           padding: 0;
