@@ -147,14 +147,14 @@
               ]'
             ></im-input-radio>
             <im-input-radio name="fruit" required id="fruit"
-              style="--layout: no-horizontal"
+              style="--display: grid;--cols: 1"
               options='[
                 { "value": "Apple", "label": "Apple <small>🍎</small>" },
                 { "value": "Orange", "label": "Orange <small>🟠</small>" },
                 { "value": "Banana", "label": "Banana <small>🍌</small>" }
               ]'
             >
-              <span slot="label">Fruits in a Dropdown! <small>With vertical layout</small></span>
+              <span slot="label">Fruits <br> <small>With vertical layout via <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">--display: grid; --cols: 1;</code></small></span>
             </im-input-radio>
 
             <im-select
@@ -162,7 +162,7 @@
               id="fruits_select"
               value="Apple"
             >
-              <p slot="label">Fruits! <br><small>This displays ImSelect as a standard HTMLSelectElement (Inspect to see structure)</small></p>
+              <p slot="label">Fruits in a Dropdown! <br><small>This displays ImSelect as a standard HTMLSelectElement (Inspect to see structure)</small></p>
               <option value="Apple">Apple <small>🍎</small></option>
               <option value="Orange">Orange <small>🟠</small></option>
               <option value="Banana">Banana <small>🍌</small></option>
@@ -202,6 +202,31 @@
                 <span class="icon" aria-hidden="true">🐹</span><span>Hamster</span>
               </option>
             </im-select>
+
+            <im-input-radio name="radio_multi_columns" required id="radio_multi_columns"
+              style="--display: grid;--cols: 3"
+              options='[
+                { "value": "Espresso", "label": "Espresso" },
+                { "value": "Latte", "label": "Latte" },
+                { "value": "Cappuccino", "label": "Cappuccino" },
+                { "value": "Americano", "label": "Americano" },
+                { "value": "Flat White", "label": "Flat White" },
+                { "value": "Mocha", "label": "Mocha" },
+                { "value": "Macchiato", "label": "Macchiato" },
+                { "value": "Irish Coffee", "label": "Irish Coffee" },
+                { "value": "Long Black", "label": "Long Black" },
+                { "value": "Cortado", "label": "Cortado" },
+                { "value": "Piccolo Latte", "label": "Piccolo Latte" },
+                { "value": "Affogato", "label": "Affogato" },
+                { "value": "Breve", "label": "Breve" }
+              ]'
+            >
+              <span slot="label">Coffee Types! <small>With multi-columns layout</small></span>
+            </im-input-radio>
+
+            <im-input-range label="Coffee Type Columns Controller" name="coffee_type_columns_controller" id="coffee_type_columns_controller" max="5" min="1" value="3" step="1" showTooltip
+              onchange="console.log(event.target.value); radio_multi_columns.style.setProperty('--cols', event.target.value ?? 1);"
+            ></im-input-range>
             <button type="submit" class="button"></button>
           </form>
         </details>

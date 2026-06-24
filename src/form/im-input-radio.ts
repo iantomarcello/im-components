@@ -14,13 +14,23 @@ export class ImInputRadio extends ImInputCheckbox {
   static styles = [
     ...super.styles,
     css`
+      @property --display {
+        syntax: "flex | grid";
+        inherits: true;
+        initial-value: flex;
+      }
+
       :host {
         --radio_size_percent: 0.66;
-        --layout: 'horizontal';
+        --display: flex;
+        --cols: 2;
       }
 
       .input-container {
-        flex-direction: if(style(--layout: 'horizontal'): row; else: column);
+        display: flex; /* fallback */
+        display: if(style(--display: flex): flex; else: grid);
+        grid-template-columns: repeat(var(--cols), 1fr);
+        flex-wrap: wrap;
       }
 
       .input-row {
