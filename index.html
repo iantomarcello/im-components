@@ -154,18 +154,54 @@
                 { "value": "Banana", "label": "Banana <small>🍌</small>" }
               ]'
             >
-              <span slot="label">Fruits! <small>With vertical layout</small></span>
+              <span slot="label">Fruits in a Dropdown! <small>With vertical layout</small></span>
             </im-input-radio>
 
-            <im-select name="Dog Breeds" id="dog_breeds" label="Dog Breeds"
+            <im-select
+              name="fruits_select"
+              id="fruits_select"
+              value="Apple"
+            >
+              <p slot="label">Fruits! <br><small>This displays ImSelect as a standard HTMLSelectElement (Inspect to see structure)</small></p>
+              <option value="Apple">Apple <small>🍎</small></option>
+              <option value="Orange">Orange <small>🟠</small></option>
+              <option value="Banana">Banana <small>🍌</small></option>
+            </im-select>
+
+            <im-select
+              name="dog_breeds"
+              id="dog_breeds"
+              label="Dog Breeds"
               value="Golden Retriever"
               options='[
-                { "value": "Labrador", "label": "Labrador" },
-                { "value": "German Shepherd", "label": "German Shepherd" },
-                { "value": "Golden Retriever", "label": "Golden Retriever" },
-                { "value": "Poodle", "label": "Poodle", "disabled": true }
+                { "value": "Labrador", "label": "<span class=\"icon\" aria-hidden=\"true\">🐕</span><span>Labrador</span>" },
+                { "value": "German Shepherd", "label": "<span class=\"icon\" aria-hidden=\"true\">🐺</span><span>German Shepherd</span>" },
+                { "value": "Golden Retriever", "label": "<span class=\"icon\" aria-hidden=\"true\">🦮</span><span>Golden Retriever</span>" },
+                { "value": "Poodle", "label": "<span class=\"icon\" aria-hidden=\"true\">🐩</span><span>Poodle</span>", "disabled": true }
               ]'
             ></im-select>
+
+            <!-- Light-DOM options: preferred for hand-authored rich markup -->
+            <im-select
+              name="pet"
+              id="pet_select"
+              label="Select pet"
+              value="cat"
+              style="--accent_color: #a78bfa"
+            >
+              <option value="">
+                <span>Please select a pet</span>
+              </option>
+              <option value="cat">
+                <span class="icon" aria-hidden="true">🐱</span><span>Cat</span>
+              </option>
+              <option value="dog">
+                <span class="icon" aria-hidden="true">🐶</span><span>Dog</span>
+              </option>
+              <option value="hamster">
+                <span class="icon" aria-hidden="true">🐹</span><span>Hamster</span>
+              </option>
+            </im-select>
             <button type="submit" class="button"></button>
           </form>
         </details>
