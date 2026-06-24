@@ -131,7 +131,7 @@
           </form>
         </details>
         <details open>
-          <summary id="input-checkbox-radio" class="summary anchor">Input Check box and Radios</summary>
+          <summary id="input-checkbox-radio" class="summary anchor">Input Check box, Radios and Dropdowns</summary>
           <form class="form">
             <im-input-checkbox name="tnc" id="tnc" label="Terms and Condition apply"></im-input-checkbox>
             <im-input-checkbox name="pp" id="pp" required>
@@ -156,6 +156,16 @@
             >
               <span slot="label">Fruits! <small>With vertical layout</small></span>
             </im-input-radio>
+
+            <im-select name="Dog Breeds" id="dog_breeds" label="Dog Breeds"
+              value="Golden Retriever"
+              options='[
+                { "value": "Labrador", "label": "Labrador" },
+                { "value": "German Shepherd", "label": "German Shepherd" },
+                { "value": "Golden Retriever", "label": "Golden Retriever" },
+                { "value": "Poodle", "label": "Poodle", "disabled": true }
+              ]'
+            ></im-select>
             <button type="submit" class="button"></button>
           </form>
         </details>
