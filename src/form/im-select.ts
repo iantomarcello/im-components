@@ -1,5 +1,6 @@
 import { html, css, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
+import { ifDefined } from 'lit/directives/if-defined.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
 import type { ImOption } from './im-input-radio';
@@ -49,6 +50,22 @@ export interface ImOptionGroup {
  * - `--checkmark_content` — `::checkmark` content (default: `"✓"`)
  * - `--picker_opacity_duration` — picker fade transition (default: `0.2s`)
  *
+ * CSS variables (listbox mode, `multiple`):
+ * - `--listbox_height` — listbox height (default: `130px`)
+ * - `--listbox_collapsed_height` — collapsed height when `collapsible` (default: `2.2rem`)
+ * - `--listbox_expand_duration` — expand/collapse transition (default: `0.6s`)
+ * - `--listbox_expand_max_height` — max overlay height when expanded (default: `20rem`)
+ * - `--listbox_overlay_z_index` — z-index when expanded over other content (default: `10`)
+ *
+ * Listbox mode:
+ * - Set the `multiple` attribute to render a customizable listbox instead of a dropdown.
+ * - Use `collapsible` with `multiple` for an expanding listbox that overlays content below instead of shifting layout.
+ * - `min` / `max` constrain how many options may be selected when `multiple` is set.
+ *   `min` defaults to `1` when unset; `max` is unlimited when unset.
+ *   Selection below `min` or above `max` is reported via `ElementInternals` validity
+ *   (`rangeUnderflow` / `rangeOverflow`). Exceeding `max` is allowed but invalid.
+ * - The `value` property is a comma-separated list of selected option values.
+ *
  * Options API:
  * - `options` — flat array of `{ value, label, disabled? }` objects
  * - `groups` — array of `{ label, options }` for grouped selects (takes precedence over `options`)
@@ -90,6 +107,11 @@ export class ImSelect extends ImInput {
         --option_checked_weight: 600;
         --checkmark_content: "✓";
         --picker_opacity_duration: 0.2s;
+        --listbox_height: 150px;
+        --listbox_collapsed_height: 2.2rem;
+        --listbox_expand_duration: 0.6s;
+        --listbox_expand_max_height: 20rem;
+        --listbox_overlay_z_index: 10;
       }
 
       /* Reset inherited styles from ImInput */
@@ -116,6 +138,30 @@ export class ImSelect extends ImInput {
         option:disabled {
           background-color: var(--disabled_color);
         }
+
+        :host([multiple][collapsible]) .input-wrapper {
+          position: relative;
+          height: var(--listbox_collapsed_height);
+          overflow: visible;
+        }
+
+        :host([multiple][collapsible]) .input {
+          position: absolute;
+          inset: 0 auto auto 0;
+          width: 100%;
+          height: var(--listbox_collapsed_height);
+          overflow: hidden;
+          z-index: 1;
+        }
+
+        :host([multiple][collapsible]) .input:hover,
+        :host([multiple][collapsible]) .input:focus-within {
+          height: fit-content;
+          max-height: var(--listbox_expand_max_height);
+          overflow-y: auto;
+          z-index: var(--listbox_overlay_z_index);
+          box-shadow: 0 4px 12px hsl(from var(--font_color) h s l / 0.15);
+        }
       }
 
       @supports (appearance: base-select) {
@@ -138,12 +184,16 @@ export class ImSelect extends ImInput {
           background: transparent;
         }
 
-        select.input,
-        ::picker(select) {
+        :host(:not([multiple])) select.input,
+        :host(:not([multiple])) ::picker(select) {
           appearance: base-select;
         }
 
-        select.input {
+        :host(:not([collapsible])) select.input {
+          height: var(--listbox_height);
+        }
+
+        :host(:not([multiple])) select.input {
           width: 100%;
           padding: var(--select_button_padding);
           border: 1px solid var(--border_color);
@@ -153,26 +203,26 @@ export class ImSelect extends ImInput {
           transition: background-color 0.2s;
         }
 
-        select.input:hover,
-        select.input:focus {
+        :host(:not([multiple])) select.input:hover,
+        :host(:not([multiple])) select.input:focus {
           background-color: hsl(from var(--idle_bg_color) h s calc(l * 0.95));
         }
 
-        select.input:disabled {
+        :host(:not([multiple])) select.input:disabled {
           background-color: var(--disabled_color);
           border-color: hsl(from var(--disabled_color) h s calc(l * 0.6));
         }
 
-        select.input::picker-icon {
+        :host(:not([multiple])) select.input::picker-icon {
           color: var(--picker_icon_color);
           transition: rotate var(--picker_opacity_duration);
         }
 
-        select.input:open::picker-icon {
+        :host(:not([multiple])) select.input:open::picker-icon {
           rotate: var(--picker_icon_rotate_open);
         }
 
-        ::picker(select) {
+        :host(:not([multiple])) ::picker(select) {
           border: 1px solid var(--picker_border_color);
           border-radius: var(--select_border_radius);
           background-color: var(--picker_bg_color);
@@ -181,14 +231,66 @@ export class ImSelect extends ImInput {
           transition: all var(--picker_opacity_duration) allow-discrete;
         }
 
-        select.input:open::picker(select) {
+        :host(:not([multiple])) select.input:open::picker(select) {
           opacity: 1;
         }
 
         @starting-style {
-          select.input:open::picker(select) {
+          :host(:not([multiple])) select.input:open::picker(select) {
             opacity: 0;
           }
+        }
+
+        :host([multiple]) select.input {
+          appearance: base-select;
+          width: 100%;
+          max-height: var(--listbox_expand_max_height);
+          padding: 0;
+          border: 1px solid var(--border_color);
+          border-radius: var(--select_border_radius);
+          background-color: var(--idle_bg_color);
+          color: var(--font_color);
+          scrollbar-gutter: stable;
+          scrollbar-width: thin;
+          scroll-behavior: smooth;
+        }
+
+        :host([multiple]) select.input:disabled {
+          background-color: var(--disabled_color);
+          border-color: hsl(from var(--disabled_color) h s calc(l * 0.6));
+        }
+
+        :host([multiple][collapsible]) .input-wrapper {
+          position: relative;
+          height: var(--listbox_collapsed_height);
+          overflow: visible;
+        }
+
+        :host([multiple][collapsible]) select.input {
+          position: absolute;
+          inset: 0 auto auto 0;
+          width: 100%;
+          height: var(--listbox_collapsed_height);
+          overflow: hidden;
+          z-index: 1;
+          transition:
+            height var(--listbox_expand_duration),
+            box-shadow var(--listbox_expand_duration);
+          interpolate-size: allow-keywords;
+        }
+
+        :host([multiple][collapsible]) select.input:hover,
+        :host([multiple][collapsible]) select.input:has(option:focus) {
+          height: fit-content;
+          max-height: var(--listbox_expand_max_height);
+          overflow-y: auto;
+          z-index: var(--listbox_overlay_z_index);
+          box-shadow: 0 4px 12px hsl(from var(--font_color) h s l / 0.15);
+        }
+
+        :host([multiple]) option::checkmark {
+          order: 1;
+          margin-left: auto;
         }
 
         option {
@@ -243,6 +345,12 @@ export class ImSelect extends ImInput {
   @property({ type: Array })
   groups: ImOptionGroup[] = [];
 
+  @property({ type: Boolean, reflect: true })
+  multiple = false;
+
+  @property({ type: Boolean, reflect: true })
+  collapsible = false;
+
   @state()
   private _hasSlottedOptions = false;
 
@@ -250,15 +358,165 @@ export class ImSelect extends ImInput {
     super();
   }
 
+  init() {
+    if (this.multiple && this.$input && this.value) {
+      this.applyMultipleValue(this.value);
+    }
+    this.setValue();
+  }
+
+  private getMultipleMin(): number {
+    return this.min ?? 1;
+  }
+
+  private getMultipleValidationMessage(flags: Record<string, boolean>): string {
+    if (flags.rangeOverflow && this.max != null) {
+      return this.errors.rangeOverflow
+        ?? `Please select at most ${this.max} option${this.max === 1 ? '' : 's'}.`;
+    }
+    if (flags.rangeUnderflow) {
+      const min = this.getMultipleMin();
+      return this.errors.rangeUnderflow
+        ?? `Please select at least ${min} option${min === 1 ? '' : 's'}.`;
+    }
+    if (flags.valueMissing) {
+      return this.errors.valueMissing ?? 'Please select at least one option.';
+    }
+    return '';
+  }
+
+  private applyMultipleValidity() {
+    const count = this.$input.selectedOptions.length;
+    const min = this.getMultipleMin();
+    const flags: Record<string, boolean> = {};
+
+    if (this.required && count === 0) {
+      flags.valueMissing = true;
+    } else if (count < min) {
+      flags.rangeUnderflow = true;
+    }
+
+    if (this.max != null && count > this.max) {
+      flags.rangeOverflow = true;
+    }
+
+    const valid = !flags.valueMissing && !flags.rangeUnderflow && !flags.rangeOverflow;
+    const message = valid ? '' : this.getMultipleValidationMessage(flags);
+
+    this.validity = valid ? ({ valid: true } as ValidityState) : flags;
+    this.internals?.setValidity(
+      valid ? {} : flags,
+      message,
+      this.$input,
+    );
+  }
+
+  setValue() {
+    if (!this.$input) return;
+
+    if (this.multiple) {
+      const formData = new FormData();
+      Array.from(this.$input.selectedOptions).forEach((opt) => {
+        formData.append(this.name || '', opt.value);
+      });
+      this.internals?.setFormValue(formData);
+      this.applyMultipleValidity();
+      return;
+    }
+
+    this.internals?.setFormValue(this.$input.value);
+    this.validity = this.$input.validity;
+    this.internals?.setValidity(
+      this.$input.validity as any,
+      this.$input.validationMessage,
+      this.$input,
+    );
+  }
+
+  handleInput(event: InputEvent) {
+    if (this.multiple) {
+      const select = event.currentTarget as HTMLSelectElement;
+      const newValue = Array.from(select.selectedOptions).map((opt) => opt.value).join(',');
+      if (newValue !== this.value) {
+        this.value = newValue;
+      }
+      this.setValue();
+      this.touched = true;
+      this.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+    super.handleInput(event);
+  }
+
   firstUpdated() {
     super.firstUpdated();
     this.syncSlottedOptions();
+    this.$input?.addEventListener('transitionend', this.onListboxTransitionEnd);
   }
 
+  disconnectedCallback() {
+    this.$input?.removeEventListener('transitionend', this.onListboxTransitionEnd);
+    super.disconnectedCallback();
+  }
+
+  private onListboxTransitionEnd = (event: TransitionEvent) => {
+    if (!this.multiple || !this.collapsible) return;
+    if (event.target !== this.$input || event.propertyName !== 'height') return;
+
+    const select = this.$input;
+    if (!select.matches(':hover') && !select.querySelector('option:focus')) {
+      select.scrollTop = 0;
+    }
+  };
+
   protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (this._hasSlottedOptions) {
-      this.syncSlottedOptions();
+    if (
+      changedProperties.has('value')
+      || changedProperties.has('min')
+      || changedProperties.has('max')
+      || changedProperties.has('required')
+    ) {
+      if (this.multiple && this.$input) {
+        if (changedProperties.has('value') && !this.selectionMatchesValue(this.value)) {
+          this.applyMultipleValue(this.value);
+        }
+        this.setValue();
+      } else if (changedProperties.has('value')) {
+        if (this.$input && this.$input.value !== this.value) {
+          this.$input.value = this.value;
+        }
+        this.setValue();
+      } else if (this.multiple) {
+        this.setValue();
+      }
+    }
+  }
+
+  private selectionMatchesValue(value: string): boolean {
+    const expected = this.parseMultipleValue(value);
+    const selected = Array.from(this.$input.selectedOptions).map((opt) => opt.value);
+    if (expected.length !== selected.length) return false;
+    return expected.every((v) => selected.includes(v));
+  }
+
+  private parseMultipleValue(value: string): string[] {
+    return value ? value.split(',').map((v) => v.trim()).filter(Boolean) : [];
+  }
+
+  private applyMultipleValue(value: string) {
+    const values = this.parseMultipleValue(value);
+    this.$input.querySelectorAll('option').forEach((opt) => {
+      opt.selected = values.includes(opt.value);
+    });
+  }
+
+  private syncSelectValue() {
+    if (!this.$input || !this.value) return;
+
+    if (this.multiple) {
+      this.applyMultipleValue(this.value);
+    } else {
+      this.$input.value = this.value;
     }
   }
 
@@ -282,6 +540,9 @@ export class ImSelect extends ImInput {
     const slot = this.renderRoot?.querySelector('slot[data-options]') as HTMLSlotElement | null;
     if (!select || !slot || !this._hasSlottedOptions) return;
 
+    const scrollTop = select.scrollTop;
+    const activeValue = (document.activeElement as HTMLOptionElement | null)?.value;
+
     select.querySelectorAll(':scope > option, :scope > optgroup').forEach((el) => el.remove());
 
     slot.assignedElements().forEach((el) => {
@@ -290,13 +551,27 @@ export class ImSelect extends ImInput {
       }
     });
 
-    if (this.value) {
-      select.value = this.value;
+    this.syncSelectValue();
+    select.scrollTop = scrollTop;
+
+    if (activeValue) {
+      const option = select.querySelector(`option[value="${CSS.escape(activeValue)}"]`);
+      (option as HTMLOptionElement | null)?.focus({ preventScroll: true });
     }
   }
 
   private handleChange(event: Event) {
-    this.handleInput(event as InputEvent);
+    if (this.multiple) {
+      const select = event.currentTarget as HTMLSelectElement;
+      const newValue = Array.from(select.selectedOptions).map((opt) => opt.value).join(',');
+      if (newValue !== this.value) {
+        this.value = newValue;
+      }
+      this.setValue();
+      this.touched = true;
+    } else {
+      this.handleInput(event as InputEvent);
+    }
     this.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
@@ -323,6 +598,54 @@ export class ImSelect extends ImInput {
     return this.options.map((opt) => this.renderOption(opt));
   }
 
+  private renderSelectOptions() {
+    return html`
+      ${this.multiple ? nothing : html`
+        <button type="button" part="select-button">
+          <selectedcontent part="selected-content"></selectedcontent>
+          <slot name="button"></slot>
+        </button>
+      `}
+      ${this._hasSlottedOptions ? nothing : this.renderOptionsFromProps()}
+    `;
+  }
+
+  private renderSelect() {
+    if (this.multiple) {
+      return html`<select
+        novalidate
+        id="input-${this.uid}"
+        name=${this.name}
+        @input="${this.handleInput}"
+        @blur="${this.handleInput}"
+        @change=${this.handleChange}
+        class="input"
+        part="input"
+        ?multiple=${this.multiple}
+        min=${this.getMultipleMin()}
+        max=${ifDefined(this.max != null ? this.max : undefined)}
+        ?disabled=${this.disabled}
+        ?required=${this.required}
+        ?readonly=${this.readonly}
+      >${this.renderSelectOptions()}</select>`;
+    }
+
+    return html`<select
+      novalidate
+      id="input-${this.uid}"
+      name=${this.name}
+      @input="${this.handleInput}"
+      @blur="${this.handleInput}"
+      @change=${this.handleChange}
+      class="input"
+      part="input"
+      .value=${this.value}
+      ?disabled=${this.disabled}
+      ?required=${this.required}
+      ?readonly=${this.readonly}
+    >${this.renderSelectOptions()}</select>`;
+  }
+
   render() {
     return html`<div class="field" part="field">
       <div class="label-wrapper" part="label">
@@ -335,26 +658,7 @@ export class ImSelect extends ImInput {
         <div hidden aria-hidden="true">
           <slot data-options @slotchange=${this.onOptionsSlotChange}></slot>
         </div>
-        <select
-          novalidate
-          id="input-${this.uid}"
-          name=${this.name}
-          @input="${this.handleInput}"
-          @blur="${this.handleInput}"
-          @change=${this.handleChange}
-          class="input"
-          part="input"
-          .value=${this.value}
-          ?disabled=${this.disabled}
-          ?required=${this.required}
-          ?readonly=${this.readonly}
-        >
-          <button type="button" part="select-button">
-            <selectedcontent part="selected-content"></selectedcontent>
-            <slot name="button"></slot>
-          </button>
-          ${this._hasSlottedOptions ? nothing : this.renderOptionsFromProps()}
-        </select>
+        ${this.renderSelect()}
       </div>
       ${!this.internals?.validity?.valid && this.touched ?
         html`<p class="errors" part="errors">

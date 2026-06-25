@@ -171,7 +171,7 @@
             <im-select
               name="dog_breeds"
               id="dog_breeds"
-              label="Dog Breeds"
+              label="Dog Breeds (Passes option via attribute) (Also shows Poodle as disabled)"
               value="Golden Retriever"
               options='[
                 { "value": "Labrador", "label": "<span class=\"icon\" aria-hidden=\"true\">🐕</span><span>Labrador</span>" },
@@ -185,22 +185,15 @@
             <im-select
               name="pet"
               id="pet_select"
-              label="Select pet"
               value="cat"
               style="--accent_color: #a78bfa"
             >
-              <option value="">
-                <span>Please select a pet</span>
-              </option>
-              <option value="cat">
-                <span class="icon" aria-hidden="true">🐱</span><span>Cat</span>
-              </option>
-              <option value="dog">
-                <span class="icon" aria-hidden="true">🐶</span><span>Dog</span>
-              </option>
-              <option value="hamster">
-                <span class="icon" aria-hidden="true">🐹</span><span>Hamster</span>
-              </option>
+              <optgroup label="Please select a pet">
+                <option value="cat">Cat</option>
+                <option value="dog">Dog</option>
+                <option value="hamster">Hamster</option>
+              </optgroup>
+              <p slot="label">Select pet with <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">optgroup</code> and <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">option</code></p>
             </im-select>
 
             <im-input-radio name="radio_multi_columns" required id="radio_multi_columns"
@@ -227,6 +220,77 @@
             <im-input-range label="Coffee Type Columns Controller" name="coffee_type_columns_controller" id="coffee_type_columns_controller" max="5" min="1" value="3" step="1" showTooltip
               onchange="console.log(event.target.value); radio_multi_columns.style.setProperty('--cols', event.target.value ?? 1);"
             ></im-input-range>
+
+            <br>
+            <!-- Select food with multiple selection and categories, categorize by type of food-->
+            <im-select
+              name="food"
+              id="food"
+              multiple
+              collapsible
+            >
+              <p slot="label">Select food with <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">multiple</code> and <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">collapsible</code></p>
+              <optgroup label="Fruits">
+                <option value="apple">Apple</option>
+                <option value="banana">Banana</option>
+                <option value="cherry">Cherry</option>
+              </optgroup>
+              <optgroup label="Vegetables">
+                <option value="carrot">Carrot</option>
+                <option value="lettuce">Lettuce</option>
+                <option value="spinach">Spinach</option>
+              </optgroup>
+              <optgroup label="Meat">
+                <option value="beef">Beef</option>
+                <option value="chicken">Chicken</option>
+                <option value="pork">Pork</option>
+                <option value="fish">Fish</option>
+                <option value="shrimp">Shrimp</option>
+                <option value="lobster">Lobster</option>
+                <option value="crab">Crab</option>
+                <option value="oyster">Oyster</option>
+                <option value="mussel">Mussel</option>
+                <option value="clam">Clam</option>
+              </optgroup>
+              <optgroup label="Dairy">
+                <option value="milk">Milk</option>
+                <option value="cheese">Cheese</option>
+                <option value="yogurt">Yogurt</option>
+                <option value="butter">Butter</option>
+                <option value="cream">Cream</option>
+                <option value="ice cream">Ice Cream</option>
+              </optgroup>
+            </im-select>
+
+            <im-select
+              name="movies"
+              id="movies"
+              multiple
+              min="2"
+              max="4"
+            >
+              <p slot="label">Select movie filters <br><small><code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">multiple</code> with <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">min="2"</code> and <code class="inline-block p-1 bg-gray-700 text-xs rounded-lg">max="4"</code></small></p>
+              <optgroup label="Genre">
+                <option value="action">Action</option>
+                <option value="comedy">Comedy</option>
+                <option value="drama">Drama</option>
+                <option value="horror">Horror</option>
+                <option value="sci-fi">Sci-Fi</option>
+                <option value="romance">Romance</option>
+              </optgroup>
+              <optgroup label="Length">
+                <option value="short">Short (&lt; 90 min)</option>
+                <option value="standard">Standard (90–150 min)</option>
+                <option value="long">Long (150+ min)</option>
+              </optgroup>
+              <optgroup label="Rating">
+                <option value="g">G</option>
+                <option value="pg">PG</option>
+                <option value="pg-13">PG-13</option>
+                <option value="r">R</option>
+              </optgroup>
+            </im-select>
+            
             <button type="submit" class="button"></button>
           </form>
         </details>
