@@ -66,7 +66,7 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-12">
         <details open>
           <summary id="input-text" class="summary anchor">Input text</summary>
-          <form class="form">
+          <im-form class="form">
             <p class="text-lg font-bold">Commons</p>
             <im-input
               label="This is a plain label"
@@ -106,8 +106,8 @@
               >
             </im-input>
             <button type="submit" class="button"></button>
-          </form>
-          <form class="form">
+          </im-form>
+          <im-form class="form">
             <p class="text-lg font-bold">Errors</p>
             <im-input name="required" id="required" required>
               <span slot="label">I need required</span>
@@ -128,11 +128,11 @@
               errors='{"valueMissing": "You must fill out this field!"}'
             ></im-input>
             <button type="submit" class="button"></button>
-          </form>
+          </im-form>
         </details>
         <details open>
           <summary id="input-checkbox-radio" class="summary anchor">Input Check box, Radios and Dropdowns</summary>
-          <form class="form">
+          <im-form class="form">
             <im-input-checkbox name="tnc" id="tnc" label="Terms and Condition apply"></im-input-checkbox>
             <im-input-checkbox name="pp" id="pp" required>
               <span slot="label">By agreeing to privacy policy, we can basically track you. Hehe {
@@ -221,9 +221,9 @@
               onchange="console.log(event.target.value); radio_multi_columns.style.setProperty('--cols', event.target.value ?? 1);"
             ></im-input-range>
             <button type="submit" class="button"></button>
-          </form>
+          </im-form>
           <hr class="my-6">
-          <form class="form mt-6">
+          <im-form class="form mt-6 col-span-12">
             <!-- Select food with multiple selection and categories, categorize by type of food-->
             <im-select
               name="food"
@@ -294,12 +294,12 @@
             </im-select>
             
             <button type="submit" class="button"></button>
-          </form>
+          </im-form>
           
         </details>
         <details open>
           <summary class="summary">Input range, date, Textarea</summary>
-          <form class="form">
+          <im-form class="form">
             <im-input-range
               label="range input without min or max"
               name="unranged"
@@ -356,7 +356,7 @@
 
             TODO: DATE
             <button type="submit" class="button"></button>
-          </form>
+          </im-form>
         </details>
         <details>
           <summary id="tooltip" class="summary anchor">Tooltip</summary>
@@ -434,7 +434,7 @@
         <span>|</span>
         <button type="button" class="button" onclick="promptToast()">Show Random Toast</button>
       </div>
-      <form id="toastControl" class="form">
+      <im-form id="toastControl" class="form">
         <im-input-radio name="position_x" label="Toast Position X" value="center"
           options='[
             { "value": "left", "label": "Left" },
@@ -449,7 +449,7 @@
             { "value": "bottom", "label": "Bottom" }
           ]'
         ></im-input-radio>
-      </form>
+      </im-form>
       <script>
         function promptToast(type = null, message = null) {
           const randomBiscuitMessages = [
@@ -489,17 +489,11 @@
       </script>
     </div>
     <script>
-      const forms = document.querySelectorAll('form');
+      const forms = document.querySelectorAll('im-form');
       forms.forEach(form => {
         form.addEventListener('submit', (e) => {
           e.preventDefault();
-          const formData = new FormData(form);
-          const data = {};
-          formData.keys().forEach(key => {
-            const values = formData.getAll(key);
-            data[key] = values.length > 1 ? values : values[0];
-          });
-          console.log(data);
+          console.log(e.detail);
         });
       });
     </script>
