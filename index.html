@@ -494,7 +494,12 @@
         form.addEventListener('submit', (e) => {
           e.preventDefault();
           const formData = new FormData(form);
-          console.log(Object.fromEntries(formData.entries()));
+          const data = {};
+          formData.keys().forEach(key => {
+            const values = formData.getAll(key);
+            data[key] = values.length > 1 ? values : values[0];
+          });
+          console.log(data);
         });
       });
     </script>
