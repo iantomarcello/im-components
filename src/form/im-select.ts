@@ -1,6 +1,5 @@
 import { html, css, nothing, type PropertyValues, type TemplateResult } from 'lit';
 import { customElement, property, query, state } from 'lit/decorators.js';
-import { ifDefined } from 'lit/directives/if-defined.js';
 import 'element-internals-polyfill';
 import { ImInput } from './im-input';
 import type { ImOption } from './im-input-radio';
@@ -61,9 +60,8 @@ export interface ImOptionGroup {
  * - Set the `multiple` attribute to render a customizable listbox instead of a dropdown.
  * - Use `collapsible` with `multiple` for an expanding listbox that overlays content below instead of shifting layout.
  * - `min` / `max` constrain how many options may be selected when `multiple` is set.
- *   `min` defaults to `1` when unset; `max` is unlimited when unset.
- *   Selection below `min` or above `max` is reported via `ElementInternals` validity
- *   (`rangeUnderflow` / `rangeOverflow`). Exceeding `max` is allowed but invalid.
+ *   `min` defaults to `1` when unset and `required` is set; optional fields allow zero
+ *   selections unless `min` is explicitly set (then `min` applies once the user selects).
  * - The `value` property is a comma-separated list of selected option values.
  *
  * Options API:
@@ -189,7 +187,7 @@ export class ImSelect extends ImInput {
           appearance: base-select;
         }
 
-        :host(:not([collapsible])) select.input {
+        :host([multiple]:not([collapsible])) select.input {
           height: var(--listbox_height);
         }
 
@@ -366,23 +364,8 @@ export class ImSelect extends ImInput {
   }
 
   private getMultipleMin(): number {
-    return this.min ?? 1;
-  }
-
-  private getMultipleValidationMessage(flags: Record<string, boolean>): string {
-    if (flags.rangeOverflow && this.max != null) {
-      return this.errors.rangeOverflow
-        ?? `Please select at most ${this.max} option${this.max === 1 ? '' : 's'}.`;
-    }
-    if (flags.rangeUnderflow) {
-      const min = this.getMultipleMin();
-      return this.errors.rangeUnderflow
-        ?? `Please select at least ${min} option${min === 1 ? '' : 's'}.`;
-    }
-    if (flags.valueMissing) {
-      return this.errors.valueMissing ?? 'Please select at least one option.';
-    }
-    return '';
+    if (this.min != null) return this.min;
+    return this.required ? 1 : 0;
   }
 
   private applyMultipleValidity() {
@@ -392,7 +375,7 @@ export class ImSelect extends ImInput {
 
     if (this.required && count === 0) {
       flags.valueMissing = true;
-    } else if (count < min) {
+    } else if (count > 0 && count < min) {
       flags.rangeUnderflow = true;
     }
 
@@ -409,6 +392,22 @@ export class ImSelect extends ImInput {
       message,
       this.$input,
     );
+  }
+
+  private getMultipleValidationMessage(flags: Record<string, boolean>): string {
+    if (flags.rangeOverflow && this.max != null) {
+      return this.errors.rangeOverflow
+        ?? `Please select at most ${this.max} option${this.max === 1 ? '' : 's'}.`;
+    }
+    if (flags.rangeUnderflow) {
+      const min = this.getMultipleMin();
+      return this.errors.rangeUnderflow
+        ?? `Please select at least ${min} option${min === 1 ? '' : 's'}.`;
+    }
+    if (flags.valueMissing) {
+      return this.errors.valueMissing ?? 'Please select at least one option.';
+    }
+    return '';
   }
 
   setValue() {
@@ -613,27 +612,20 @@ export class ImSelect extends ImInput {
   private renderSelect() {
     if (this.multiple) {
       return html`<select
-        novalidate
         id="input-${this.uid}"
-        name=${this.name}
         @input="${this.handleInput}"
         @blur="${this.handleInput}"
         @change=${this.handleChange}
         class="input"
         part="input"
         ?multiple=${this.multiple}
-        min=${this.getMultipleMin()}
-        max=${ifDefined(this.max != null ? this.max : undefined)}
         ?disabled=${this.disabled}
-        ?required=${this.required}
         ?readonly=${this.readonly}
       >${this.renderSelectOptions()}</select>`;
     }
 
     return html`<select
-      novalidate
       id="input-${this.uid}"
-      name=${this.name}
       @input="${this.handleInput}"
       @blur="${this.handleInput}"
       @change=${this.handleChange}
