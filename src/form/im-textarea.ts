@@ -13,6 +13,10 @@ export class ImTextarea extends ImInput {
         min-height: 2lh;
         field-sizing: content;
       }
+
+      .input {
+        background-color: transparent;
+      }
     `
   ];
 

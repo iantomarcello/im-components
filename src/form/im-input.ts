@@ -110,7 +110,7 @@ export class ImInput extends LitElement {
         width: 100%;
         font-size: inherit;
         font-family: inherit;
-        background-color: inherit;
+        background-color: transparent;
         color: inherit;
         border: 0;
         padding: 0;
