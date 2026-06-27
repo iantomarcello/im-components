@@ -54,6 +54,7 @@ export interface ImOptionGroup {
  * - `--listbox_collapsed_height` — collapsed height when `collapsible` (default: `2.2rem`)
  * - `--listbox_expand_duration` — expand/collapse transition (default: `0.6s`)
  * - `--listbox_expand_max_height` — max overlay height when expanded (default: `20rem`)
+ * - `--listbox_viewport_margin` — viewport inset when clamping expanded listbox (default: `0.5rem`)
  * - `--listbox_overlay_z_index` — z-index when expanded over other content (default: `10`)
  *
  * Listbox mode:
@@ -109,6 +110,7 @@ export class ImSelect extends ImInput {
         --listbox_collapsed_height: 2.2rem;
         --listbox_expand_duration: 0.6s;
         --listbox_expand_max_height: 20rem;
+        --listbox_viewport_margin: 0.5rem;
         --listbox_overlay_z_index: 10;
       }
 
@@ -152,10 +154,17 @@ export class ImSelect extends ImInput {
           z-index: 1;
         }
 
+        :host([multiple][collapsible][expand-up]) .input {
+          inset: auto auto 0 0;
+        }
+
         :host([multiple][collapsible]) .input:hover,
         :host([multiple][collapsible]) .input:focus-within {
           height: fit-content;
-          max-height: var(--listbox_expand_max_height);
+          max-height: min(
+            var(--listbox_expand_max_height),
+            var(--listbox_expand_max_block_size, var(--listbox_expand_max_height))
+          );
           overflow-y: auto;
           z-index: var(--listbox_overlay_z_index);
           box-shadow: 0 4px 12px hsl(from var(--font_color) h s l / 0.15);
@@ -225,6 +234,12 @@ export class ImSelect extends ImInput {
           border-radius: var(--select_border_radius);
           background-color: var(--picker_bg_color);
           top: calc(anchor(bottom) + var(--picker_gap));
+          left: anchor(left);
+          min-inline-size: anchor-size(width);
+          max-block-size: stretch;
+          overflow-y: auto;
+          position-try-order: most-block-size;
+          position-try-fallbacks: flip-block, flip-inline;
           opacity: 0;
           transition: all var(--picker_opacity_duration) allow-discrete;
         }
@@ -277,10 +292,17 @@ export class ImSelect extends ImInput {
           interpolate-size: allow-keywords;
         }
 
+        :host([multiple][collapsible][expand-up]) select.input {
+          inset: auto auto 0 0;
+        }
+
         :host([multiple][collapsible]) select.input:hover,
         :host([multiple][collapsible]) select.input:has(option:focus) {
           height: fit-content;
-          max-height: var(--listbox_expand_max_height);
+          max-height: min(
+            var(--listbox_expand_max_height),
+            var(--listbox_expand_max_block_size, var(--listbox_expand_max_height))
+          );
           overflow-y: auto;
           z-index: var(--listbox_overlay_z_index);
           box-shadow: 0 4px 12px hsl(from var(--font_color) h s l / 0.15);
@@ -337,6 +359,8 @@ export class ImSelect extends ImInput {
   // @ts-ignore. We are simply using the query selector to get the select element.
   @query('select') $input!: HTMLSelectElement;
 
+  @query('.input-wrapper') $inputWrapper!: HTMLElement;
+
   @property({ type: Array })
   options: ImOption[] = [];
 
@@ -351,6 +375,8 @@ export class ImSelect extends ImInput {
 
   @state()
   private _hasSlottedOptions = false;
+
+  private _listboxExpandMaxHeightPx?: number;
 
   constructor() {
     super();
@@ -451,12 +477,118 @@ export class ImSelect extends ImInput {
     super.firstUpdated();
     this.syncSlottedOptions();
     this.$input?.addEventListener('transitionend', this.onListboxTransitionEnd);
+    this.bindCollapsibleListboxBounds();
   }
 
   disconnectedCallback() {
     this.$input?.removeEventListener('transitionend', this.onListboxTransitionEnd);
+    this.unbindCollapsibleListboxBounds();
     super.disconnectedCallback();
   }
+
+  private bindCollapsibleListboxBounds() {
+    if (!this.multiple || !this.collapsible) return;
+
+    this.$inputWrapper?.addEventListener('pointerenter', this.onCollapsiblePointerEnter);
+    this.$inputWrapper?.addEventListener('pointerleave', this.onCollapsiblePointerLeave);
+    this.$input?.addEventListener('focusin', this.onCollapsibleFocusIn);
+    this.$input?.addEventListener('focusout', this.onCollapsibleFocusOut);
+    window.addEventListener('scroll', this.onCollapsibleViewportChange, true);
+    window.addEventListener('resize', this.onCollapsibleViewportChange);
+  }
+
+  private unbindCollapsibleListboxBounds() {
+    this.$inputWrapper?.removeEventListener('pointerenter', this.onCollapsiblePointerEnter);
+    this.$inputWrapper?.removeEventListener('pointerleave', this.onCollapsiblePointerLeave);
+    this.$input?.removeEventListener('focusin', this.onCollapsibleFocusIn);
+    this.$input?.removeEventListener('focusout', this.onCollapsibleFocusOut);
+    window.removeEventListener('scroll', this.onCollapsibleViewportChange, true);
+    window.removeEventListener('resize', this.onCollapsibleViewportChange);
+    this.clearCollapsibleListboxBounds();
+  }
+
+  private getListboxExpandMaxHeightPx(): number {
+    if (this._listboxExpandMaxHeightPx == null) {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:var(--listbox_expand_max_height)';
+      this.renderRoot.appendChild(probe);
+      this._listboxExpandMaxHeightPx = probe.getBoundingClientRect().height;
+      probe.remove();
+    }
+    return this._listboxExpandMaxHeightPx;
+  }
+
+  private getListboxViewportMarginPx(): number {
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none;height:var(--listbox_viewport_margin)';
+    this.renderRoot.appendChild(probe);
+    const px = probe.getBoundingClientRect().height;
+    probe.remove();
+    return px;
+  }
+
+  private isCollapsibleListboxExpanded(): boolean {
+    return !!this.$input && (
+      this.$input.matches(':hover')
+      || this.$input.matches(':focus-within')
+      || !!this.$input.querySelector('option:focus')
+    );
+  }
+
+  private updateCollapsibleListboxBounds() {
+    if (!this.multiple || !this.collapsible || !this.$inputWrapper) return;
+
+    const margin = this.getListboxViewportMarginPx();
+    const rect = this.$inputWrapper.getBoundingClientRect();
+    const configuredMax = this.getListboxExpandMaxHeightPx();
+    const spaceBelow = window.innerHeight - rect.bottom - margin;
+    const spaceAbove = rect.top - margin;
+    const expandUp = configuredMax > spaceBelow && spaceAbove > spaceBelow;
+
+    if (expandUp) {
+      this.setAttribute('expand-up', '');
+    } else {
+      this.removeAttribute('expand-up');
+    }
+
+    const available = Math.max(0, expandUp ? spaceAbove : spaceBelow);
+    this.style.setProperty(
+      '--listbox_expand_max_block_size',
+      `${Math.min(configuredMax, available)}px`,
+    );
+  }
+
+  private clearCollapsibleListboxBounds() {
+    this.removeAttribute('expand-up');
+    this.style.removeProperty('--listbox_expand_max_block_size');
+  }
+
+  private onCollapsiblePointerEnter = () => {
+    this.updateCollapsibleListboxBounds();
+  };
+
+  private onCollapsiblePointerLeave = () => {
+    if (!this.isCollapsibleListboxExpanded()) {
+      this.clearCollapsibleListboxBounds();
+    }
+  };
+
+  private onCollapsibleFocusIn = () => {
+    this.updateCollapsibleListboxBounds();
+  };
+
+  private onCollapsibleFocusOut = (event: FocusEvent) => {
+    const related = event.relatedTarget as Node | null;
+    if (!related || !this.$input?.contains(related)) {
+      this.clearCollapsibleListboxBounds();
+    }
+  };
+
+  private onCollapsibleViewportChange = () => {
+    if (this.isCollapsibleListboxExpanded()) {
+      this.updateCollapsibleListboxBounds();
+    }
+  };
 
   private onListboxTransitionEnd = (event: TransitionEvent) => {
     if (!this.multiple || !this.collapsible) return;
@@ -469,6 +601,11 @@ export class ImSelect extends ImInput {
   };
 
   protected updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('collapsible') || changedProperties.has('multiple')) {
+      this.unbindCollapsibleListboxBounds();
+      this.bindCollapsibleListboxBounds();
+    }
+
     if (
       changedProperties.has('value')
       || changedProperties.has('min')

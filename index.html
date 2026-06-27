@@ -292,6 +292,20 @@
                 <option value="r">R</option>
               </optgroup>
             </im-select>
+
+
+            <!-- TODO: ImSelect with Cat breeds -->
+            <im-select name="cat_breeds" id="cat_breeds"
+              options='[
+                { "value": "persian", "label": "Persian" },
+                { "value": "siamese", "label": "Siamese" },
+                { "value": "maine_coon", "label": "Maine Coon" },
+                { "value": "ragdoll", "label": "Ragdoll" },
+                { "value": "sphynx", "label": "Sphynx" }
+              ]'
+            >
+              <p slot="label">Cat Breeds<br><small>Testing out ImSelect in a small container</small></p>
+            </im-select>
             
             <button type="submit" class="button"></button>
           </im-form>
