@@ -37,6 +37,8 @@ export class ImInputRange extends ImInput {
         display: grid;
         /* For \`showControls\` */
         grid-template-columns: 1fr max-content;
+
+        position: relative;
       }
 
       .label-wrapper, .errors {
@@ -46,7 +48,7 @@ export class ImInputRange extends ImInput {
       .input-wrapper {
         --range: calc(var(--max) - var(--min));
         --ratio: calc((var(--value) - var(--min))/var(--range));
-        --sx: calc(.5 * var(--thumb_width) + var(--ratio) * (100% - var(--thumb_width)));
+        --sx: calc(.25 * var(--thumb_width) + var(--ratio) * (100% - var(--thumb_width)));
         --track_linear_gradient: linear-gradient(var(--track_foreground_color), var(--track_foreground_color))
           0/var(--sx) 100% no-repeat var(--track_background_color);
         display: contents;
@@ -113,16 +115,20 @@ export class ImInputRange extends ImInput {
       /*  Tooltip  */
       /* --------- */
       .tooltip-anchor {
+        width: var(--thumb_width);
+        height: var(--thumb_height);
         display: inline-block;
         position: absolute;
         left: var(--sx);
-        margin-top: calc(1lh);
+        bottom: 0;
         anchor-name: --tooltip-anchor;
         pointer-events: none;
+        translate: -50% 0;
       }
 
       .tooltip {
         position: absolute;
+        bottom: 0;
         padding: 0.5rem;
         background-color: var(--thumb_color);
         color: white;
