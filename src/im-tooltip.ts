@@ -40,6 +40,8 @@ export class ImTooltip extends LitElement {
       background: transparent;
       appearance: none;
       cursor: pointer;
+      font: inherit;
+      color: inherit;
 
       slot {
         display: contents;
