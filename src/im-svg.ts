@@ -33,7 +33,7 @@ export class ImSvg extends LitElement {
    */
   private async importSVG_(src = this.src) {
     this.dispatchEvent(
-      new Event('loading', { bubbles: true, })
+      new Event('loading', { bubbles: true, composed: true })
     );
 
     this._iconHTML = await fetch(src)
@@ -51,7 +51,7 @@ export class ImSvg extends LitElement {
 
     this.updateComplete.then(() => {
       this.dispatchEvent(
-        new Event('loaded', { bubbles: true, })
+        new Event('loaded', { bubbles: true, composed: true })
       );
     });
   }

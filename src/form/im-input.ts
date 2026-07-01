@@ -214,7 +214,7 @@ export class ImInput extends LitElement {
     this.value = (event.currentTarget as HTMLInputElement)?.value ?? this.value;
     this.setValue(this.value);
     this.touched = true;
-    this.dispatchEvent(new Event('input', { bubbles: true }));
+    this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
   }
 
   getError() {

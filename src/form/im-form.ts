@@ -45,7 +45,7 @@ export class ImForm extends HTMLElement {
         return [key, values.length > 1 ? values : values[0]];
       }),
     );
-    this.dispatchEvent(new CustomEvent('submit', { detail: data }));
+    this.dispatchEvent(new CustomEvent('submit', { detail: data, bubbles: true, composed: true }));
   };
 }
 

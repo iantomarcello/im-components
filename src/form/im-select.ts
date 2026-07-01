@@ -467,7 +467,7 @@ export class ImSelect extends ImInput {
       }
       this.setValue();
       this.touched = true;
-      this.dispatchEvent(new Event('input', { bubbles: true }));
+      this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
       return;
     }
     super.handleInput(event);
@@ -708,7 +708,7 @@ export class ImSelect extends ImInput {
     } else {
       this.handleInput(event as InputEvent);
     }
-    this.dispatchEvent(new Event('change', { bubbles: true }));
+    this.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
   }
 
   private renderOption(opt: ImOption): TemplateResult {
