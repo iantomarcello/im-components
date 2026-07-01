@@ -75,8 +75,8 @@ export class ImInputRadio extends ImInputCheckbox {
 
   render() {
     return html`<div class="field" part="field">
-      <div class="label-wrapper" part="label">
-        <label class="label">
+      <div class="label-wrapper" part="label-wrapper">
+        <label class="label" part="label">
           <slot name="label"></slot>
           ${this.label}
         </label>

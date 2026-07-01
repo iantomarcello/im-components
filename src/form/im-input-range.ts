@@ -294,8 +294,8 @@ export class ImInputRange extends ImInput {
 
   protected render() {
     return html`<div class="field" part="field">
-      <div class="label-wrapper" part="label">
-        <label for="input-${this.uid}" class="label">
+      <div class="label-wrapper" part="label-wrapper">
+        <label for="input-${this.uid}" class="label" part="label">
           <slot name="label"></slot>
           ${this.label}
         </label>
