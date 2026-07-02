@@ -385,8 +385,36 @@ export class ImSelect extends ImInput {
   init() {
     if (this.multiple && this.$input && this.value) {
       this.applyMultipleValue(this.value);
+    } else if (!this.multiple) {
+      this.ensureDefaultSelection();
     }
     this.setValue();
+  }
+
+  private getFirstSelectableOption(): HTMLOptionElement | null {
+    return this.$input?.querySelector('option:not([disabled])') ?? null;
+  }
+
+  /** When no `value` is set, match native select UI by selecting the first option. */
+  private ensureDefaultSelection(): boolean {
+    if (this.multiple || this.value) return false;
+
+    const firstOption = this.getFirstSelectableOption();
+    if (!firstOption) return false;
+
+    this.value = firstOption.value;
+    return true;
+  }
+
+  private applyDefaultSingleSelection(): boolean {
+    if (this.multiple) return false;
+
+    if (this.ensureDefaultSelection()) {
+      this.syncSelectValue();
+      return true;
+    }
+
+    return false;
   }
 
   private getMultipleMin(): number {
@@ -477,6 +505,9 @@ export class ImSelect extends ImInput {
   firstUpdated() {
     super.firstUpdated();
     this.syncSlottedOptions();
+    if (this.applyDefaultSingleSelection()) {
+      this.setValue();
+    }
     this.$input?.addEventListener('transitionend', this.onListboxTransitionEnd);
     this.bindCollapsibleListboxBounds();
   }
@@ -621,6 +652,15 @@ export class ImSelect extends ImInput {
       this.unbindCollapsibleListboxBounds();
       this.bindCollapsibleListboxBounds();
     }
+
+    if (
+      !this.multiple
+      && !this.value
+      && (changedProperties.has('options') || changedProperties.has('groups'))
+      && this.applyDefaultSingleSelection()
+    ) {
+      this.setValue();
+    }
   }
 
   private selectionMatchesValue(value: string): boolean {
@@ -682,7 +722,9 @@ export class ImSelect extends ImInput {
       }
     });
 
+    this.applyDefaultSingleSelection();
     this.syncSelectValue();
+    this.setValue();
     select.scrollTop = scrollTop;
 
     if (activeValue) {

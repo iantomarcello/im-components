@@ -1,5 +1,5 @@
-import { html, css } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { html, css, type PropertyValues } from 'lit';
+import { customElement, property, queryAll } from 'lit/decorators.js';
 import 'element-internals-polyfill';
 import { ImInputCheckbox } from './im-input-checkbox';
 
@@ -65,12 +65,49 @@ export class ImInputRadio extends ImInputCheckbox {
   @property({ type: Array })
   options: ImOption[] = [];
 
+  @queryAll('input[type="radio"]') $radioInputs!: NodeListOf<HTMLInputElement>;
+
   constructor() {
     super();
   }
 
   init() {
-    /* Removes type to checkbox init(). */
+    /* Skip checkbox init(). */
+  }
+
+  protected affectsFormState(changedProperties: PropertyValues) {
+    return super.affectsFormState(changedProperties) || changedProperties.has('options');
+  }
+
+  setValue(value = this.value) {
+    const radios = [...this.$radioInputs];
+
+    radios.forEach((radio) => {
+      radio.checked = Boolean(value) && radio.value === value;
+    });
+
+    this.internals?.setFormValue(value || null);
+
+    if (!radios.length) return;
+
+    const anchor = radios.find((radio) => radio.value === value) ?? radios[0];
+
+    this.validity = anchor.validity;
+    this.internals?.setValidity(
+      anchor.validity as any,
+      anchor.validationMessage,
+      anchor,
+    );
+    this.syncPresentationState();
+  }
+
+  handleInput(event: Event) {
+    const input = event.currentTarget as HTMLInputElement;
+    if (!input.checked) return;
+
+    this.value = input.value;
+    this.touched = true;
+    this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
   }
 
   render() {

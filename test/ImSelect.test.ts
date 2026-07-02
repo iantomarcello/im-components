@@ -65,3 +65,76 @@ describe('ImSelect multiple form value', () => {
     expect(formData.getAll('food')).toEqual(['apple', 'banana']);
   });
 });
+
+describe('ImSelect default value', () => {
+  beforeEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('defaults to the first light-DOM option when no value is provided', async () => {
+    document.body.innerHTML = `
+      <form id="form">
+        <im-select name="pet" id="pet">
+          <option value="cat">Cat</option>
+          <option value="dog">Dog</option>
+          <option value="hamster">Hamster</option>
+        </im-select>
+      </form>
+    `;
+    await customElements.whenDefined('im-select');
+    await nextFrame();
+
+    const im = document.getElementById('pet') as HTMLElement & { value: string };
+    const select = getInnerSelect(im)!;
+    const form = document.getElementById('form') as HTMLFormElement;
+
+    expect(im.value).toBe('cat');
+    expect(select.value).toBe('cat');
+    expect(new FormData(form).get('pet')).toBe('cat');
+  });
+
+  it('defaults to the first JSON option when no value is provided', async () => {
+    const im = document.createElement('im-select') as HTMLElement & {
+      options: { value: string; label: string }[];
+      value: string;
+    };
+    im.id = 'fruit';
+    im.setAttribute('name', 'fruit');
+    im.options = [
+      { value: 'Apple', label: 'Apple' },
+      { value: 'Orange', label: 'Orange' },
+    ];
+    document.body.innerHTML = '<form id="form"></form>';
+    document.getElementById('form')!.appendChild(im);
+
+    await customElements.whenDefined('im-select');
+    await nextFrame();
+
+    const select = getInnerSelect(im)!;
+    const form = document.getElementById('form') as HTMLFormElement;
+
+    expect(im.value).toBe('Apple');
+    expect(select.value).toBe('Apple');
+    expect(new FormData(form).get('fruit')).toBe('Apple');
+  });
+
+  it('keeps an explicit value instead of forcing the first option', async () => {
+    document.body.innerHTML = `
+      <form id="form">
+        <im-select name="pet" id="pet" value="hamster">
+          <option value="cat">Cat</option>
+          <option value="dog">Dog</option>
+          <option value="hamster">Hamster</option>
+        </im-select>
+      </form>
+    `;
+    await customElements.whenDefined('im-select');
+    await nextFrame();
+
+    const im = document.getElementById('pet') as HTMLElement & { value: string };
+    const form = document.getElementById('form') as HTMLFormElement;
+
+    expect(im.value).toBe('hamster');
+    expect(new FormData(form).get('pet')).toBe('hamster');
+  });
+});

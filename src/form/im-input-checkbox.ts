@@ -137,6 +137,33 @@ export class ImInputCheckbox extends ImInput {
     this.$input.setAttribute('type', 'checkbox');
   }
 
+  setValue(value = this.value) {
+    const checked = value === 'on' || value === 'true';
+
+    if (this.$input) {
+      (this.$input as HTMLInputElement).checked = checked;
+    }
+
+    this.internals?.setFormValue(checked ? (value || 'on') : null);
+
+    if (!this.$input) return;
+
+    this.validity = this.$input.validity;
+    this.internals?.setValidity(
+      this.$input.validity as any,
+      this.$input.validationMessage,
+      this.$input,
+    );
+    this.syncPresentationState();
+  }
+
+  handleInput(event: InputEvent) {
+    const input = event.currentTarget as HTMLInputElement;
+    this.value = input.checked ? (input.value || 'on') : '';
+    this.touched = true;
+    this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+  }
+
   firstUpdated(): void {
     super.firstUpdated();
     this.init();
