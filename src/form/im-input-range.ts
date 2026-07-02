@@ -224,10 +224,10 @@ export class ImInputRange extends ImInput {
     super();
   }
 
-  setValue(value = this.$input.value) {
+  setValue(value = this.$input?.value) {
     super.setValue(value);
     // Keep CSS var in sync with the inner input's current value
-    this.$inputWrapper.style.setProperty('--value', this.$input.value);
+    this.$inputWrapper?.style.setProperty('--value', this.$input?.value ?? '');
   }
 
   /* ----------------------- */

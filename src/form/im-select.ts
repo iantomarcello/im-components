@@ -478,6 +478,12 @@ export class ImSelect extends ImInput {
       return;
     }
 
+    // Sync the native select value before reading validity/form-value so that
+    // calls made in willUpdate (before Lit patches the DOM) use the correct value.
+    if (this.value !== undefined && this.$input.value !== this.value) {
+      this.$input.value = this.value;
+    }
+
     this.internals?.setFormValue(this.$input.value);
     this.validity = this.$input.validity;
     this.internals?.setValidity(
