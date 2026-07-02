@@ -446,6 +446,7 @@ export class ImSelect extends ImInput {
       });
       this.internals?.setFormValue(formData);
       this.applyMultipleValidity();
+      this.syncPresentationState();
       return;
     }
 
@@ -456,6 +457,7 @@ export class ImSelect extends ImInput {
       this.$input.validationMessage,
       this.$input,
     );
+    this.syncPresentationState();
   }
 
   handleInput(event: InputEvent) {
@@ -465,7 +467,6 @@ export class ImSelect extends ImInput {
       if (newValue !== this.value) {
         this.value = newValue;
       }
-      this.setValue();
       this.touched = true;
       this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
       return;
@@ -600,31 +601,25 @@ export class ImSelect extends ImInput {
     }
   };
 
+  protected willUpdate(changedProperties: PropertyValues) {
+    if (
+      this.multiple
+      && this.$input
+      && changedProperties.has('value')
+      && !this.selectionMatchesValue(this.value)
+    ) {
+      this.applyMultipleValue(this.value);
+    }
+
+    super.willUpdate(changedProperties);
+  }
+
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+
     if (changedProperties.has('collapsible') || changedProperties.has('multiple')) {
       this.unbindCollapsibleListboxBounds();
       this.bindCollapsibleListboxBounds();
-    }
-
-    if (
-      changedProperties.has('value')
-      || changedProperties.has('min')
-      || changedProperties.has('max')
-      || changedProperties.has('required')
-    ) {
-      if (this.multiple && this.$input) {
-        if (changedProperties.has('value') && !this.selectionMatchesValue(this.value)) {
-          this.applyMultipleValue(this.value);
-        }
-        this.setValue();
-      } else if (changedProperties.has('value')) {
-        if (this.$input && this.$input.value !== this.value) {
-          this.$input.value = this.value;
-        }
-        this.setValue();
-      } else if (this.multiple) {
-        this.setValue();
-      }
     }
   }
 

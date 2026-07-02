@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // register the component
 import '../src/form/im-input';
@@ -9,6 +9,14 @@ async function nextFrame() {
 
 function getInnerInput(el: HTMLElement) {
   return (el.shadowRoot?.querySelector('input') || el.shadowRoot?.querySelector('textarea')) as HTMLInputElement | HTMLTextAreaElement | null;
+}
+
+function getErrorText(el: HTMLElement) {
+  return el.shadowRoot?.querySelector('.errors')?.textContent?.trim() ?? '';
+}
+
+function hasErrors(el: HTMLElement) {
+  return Boolean(el.shadowRoot?.querySelector('.errors'));
 }
 
 async function simulateTyping(input: HTMLInputElement | HTMLTextAreaElement, text: string) {
@@ -188,6 +196,7 @@ describe('ImInput component', () => {
     await nextFrame();
     const errors = im.shadowRoot?.querySelector('.errors');
     expect(errors).toBeTruthy();
+    expect(getErrorText(im).length).toBeGreaterThan(0);
 
     // type a value
     await simulateTyping(input, 'x');
@@ -195,6 +204,109 @@ describe('ImInput component', () => {
     await nextFrame();
     // element not associated to form value here — assert inner input value instead
     expect(input.value).toBe('x');
+    expect(im.hasAttribute('invalid')).toBe(false);
+    expect(hasErrors(im)).toBe(false);
+  });
+
+  it('shows a custom validation message from the errors property', async () => {
+    const im = document.createElement('im-input') as HTMLElement & { errors: Record<string, string> };
+    im.id = 'custom-error';
+    im.setAttribute('required', '');
+    im.errors = { valueMissing: 'You must fill out this field!' };
+    document.body.appendChild(im);
+    await customElements.whenDefined('im-input');
+    await nextFrame();
+
+    const input = getInnerInput(im)!;
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true } as any));
+    input.blur();
+    await nextFrame();
+
+    expect(hasErrors(im)).toBe(true);
+    expect(getErrorText(im)).toBe('You must fill out this field!');
+  });
+
+  it('shows and clears error messages as validity changes', async () => {
+    document.body.innerHTML = `<im-input id="toggle-error" type="email" required></im-input>`;
+    await customElements.whenDefined('im-input');
+    const im = document.getElementById('toggle-error') as HTMLElement;
+    await nextFrame();
+
+    const input = getInnerInput(im)!;
+
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true } as any));
+    input.blur();
+    await nextFrame();
+
+    expect(hasErrors(im)).toBe(true);
+    expect(getErrorText(im).length).toBeGreaterThan(0);
+
+    await simulateTyping(input, 'not-an-email');
+    input.blur();
+    await nextFrame();
+
+    expect(hasErrors(im)).toBe(true);
+
+    await simulateTyping(input, 'user@example.com');
+    input.blur();
+    await nextFrame();
+
+    expect(hasErrors(im)).toBe(false);
+    expect(getErrorText(im)).toBe('');
+  });
+
+  it('does not show error messages before the field is touched', async () => {
+    document.body.innerHTML = `<im-input id="untouched" required></im-input>`;
+    await customElements.whenDefined('im-input');
+    const im = document.getElementById('untouched') as HTMLElement;
+    await nextFrame();
+
+    expect(hasErrors(im)).toBe(false);
+    expect(getErrorText(im)).toBe('');
+  });
+
+  it('syncs form state once per user input', async () => {
+    document.body.innerHTML = `<im-input id="once" value="hello"></im-input>`;
+    await customElements.whenDefined('im-input');
+    const im = document.getElementById('once') as HTMLElement & {
+      setValue: (value?: string) => void;
+      syncPresentationState: () => void;
+    };
+    await nextFrame();
+
+    const setValue = vi.spyOn(im, 'setValue');
+    const syncPresentationState = vi.spyOn(im, 'syncPresentationState');
+    const input = getInnerInput(im)!;
+
+    await simulateTyping(input, 'hi');
+    await nextFrame();
+
+    expect(setValue).toHaveBeenCalledTimes(1);
+    expect(syncPresentationState).toHaveBeenCalledTimes(1);
+  });
+
+  it('exposes invalid presentation state when touched and invalid', async () => {
+    document.body.innerHTML = `<im-input id="inv" required></im-input>`;
+    await customElements.whenDefined('im-input');
+    const im = document.getElementById('inv') as HTMLElement & { internals?: ElementInternals };
+    await nextFrame();
+
+    expect(im.hasAttribute('invalid')).toBe(false);
+
+    const input = getInnerInput(im)!;
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, composed: true } as any));
+    input.blur();
+    await nextFrame();
+
+    expect(im.hasAttribute('invalid')).toBe(true);
+    expect(im.internals?.states?.has('--invalid')).toBe(true);
+
+    await simulateTyping(input, 'ok');
+    input.blur();
+    await nextFrame();
+
+    expect(im.hasAttribute('invalid')).toBe(false);
+    expect(im.internals?.states?.has('--invalid')).toBe(false);
   });
 
   it('placeholder: is set and input.value hides placeholder when typing', async () => {
@@ -225,6 +337,7 @@ describe('ImInput component', () => {
     input.blur();
     await nextFrame();
     expect(im.shadowRoot?.querySelector('.errors')).toBeTruthy();
+    expect(getErrorText(im).length).toBeGreaterThan(0);
 
     // valid value
     input.value = '';

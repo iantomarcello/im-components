@@ -142,12 +142,6 @@ export class ImInputCheckbox extends ImInput {
     this.init();
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('value')) {
-      this.setValue(this.value);
-    }
-  }
-
   protected render() {
     return html`<div class="field" part="field">
       <div class="input-container" part="input-container">

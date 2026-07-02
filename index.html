@@ -113,6 +113,13 @@
               <span slot="label">I need required</span>
             </im-input>
             <im-input
+              label="I min length"
+              name="errors"
+              id="errors"
+              value="hi"
+              minlength="6"
+            ></im-input>
+            <im-input
               label="I have max length and invalid pattern"
               name="errors"
               id="errors"
@@ -367,6 +374,8 @@
             ></im-input-range>
 
             <im-textarea label="I am a textarea!" name="textarea" id="textarea"></im-textarea>
+
+            <im-textarea label="I am a textarea with a default value" name="textarea_with_value" id="textarea_with_value" value="This is a default value"></im-textarea>
 
             TODO: DATE
             <button type="submit" class="button"></button>

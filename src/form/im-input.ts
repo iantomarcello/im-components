@@ -18,9 +18,16 @@ import { ifDefined } from 'lit/directives/if-defined.js';
  *
  * CSS parts:
  * - `field` — top-level wrapper
- * - `label` — label wrapper
- * - `input` — input wrapper
+ * - `label` — label element
+ * - `input-wrapper` — bordered input container
+ * - `input` — native `<input>` element
  * - `errors` — errors block
+ *
+ * Presentation states (exposed via `ElementInternals.states` and the
+ * reflected `invalid` attribute when `touched && !valid`):
+ * - `--invalid` — style error UI from light DOM, e.g.
+ *   `im-input:state(--invalid)::part(input-wrapper)` or
+ *   `im-input[invalid]::part(input-wrapper)`
  *
  * Form behaviour:
  * - The element is form-associated (`static formAssociated = true`) and uses
@@ -34,6 +41,7 @@ import { ifDefined } from 'lit/directives/if-defined.js';
  * @slot label - Content for the label
  * @csspart field
  * @csspart label
+ * @csspart input-wrapper
  * @csspart input
  * @csspart errors
  * @example
@@ -200,19 +208,62 @@ export class ImInput extends LitElement {
     this.internals = this.attachInternals && this.attachInternals();
   }
 
-  setValue(value = this.$input.value) {
+  setValue(value = this.$input?.value ?? this.value) {
+    if (this.$input && this.$input.value !== value) {
+      this.$input.value = value;
+    }
+
     this.internals?.setFormValue(value);
-    this.validity = this.$input?.validity;
+
+    if (!this.$input) return;
+
+    this.validity = this.$input.validity;
     this.internals?.setValidity(
-      this.$input?.validity as any,
-      this.$input?.validationMessage,
+      this.$input.validity as any,
+      this.$input.validationMessage,
       this.$input
     );
+    this.syncPresentationState();
+  }
+
+  protected affectsFormState(changedProperties: PropertyValues) {
+    return [
+      'value',
+      'touched',
+      'required',
+      'minlength',
+      'maxlength',
+      'min',
+      'max',
+      'type',
+      'disabled',
+      'readonly',
+      'errors',
+    ].some((key) => changedProperties.has(key));
+  }
+
+  protected syncFormValueFromState() {
+    this.setValue(this.value);
+  }
+
+  /** Exposes invalid UI state to light-DOM consumers via custom state and `[invalid]`. */
+  syncPresentationState() {
+    const showInvalid = this.touched && !this.validity?.valid;
+
+    this.toggleAttribute('invalid', showInvalid);
+
+    const states = this.internals?.states;
+    if (!states) return;
+
+    if (showInvalid) {
+      states.add('--invalid');
+    } else {
+      states.delete('--invalid');
+    }
   }
 
   handleInput(event: InputEvent) {
     this.value = (event.currentTarget as HTMLInputElement)?.value ?? this.value;
-    this.setValue(this.value);
     this.touched = true;
     this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
   }
@@ -234,14 +285,14 @@ export class ImInput extends LitElement {
 
   firstUpdated() {
     this.init();
+    this.syncFormValueFromState();
   }
 
-  protected updated(changedProperties: PropertyValues) {
-    if (changedProperties.has('value')) {
-      if (this.$input && (this.$input as HTMLInputElement | HTMLTextAreaElement).value !== this.value) {
-        (this.$input as HTMLInputElement | HTMLTextAreaElement).value = this.value;
-      }
-      this.setValue(this.value);
+  protected willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
+
+    if (this.affectsFormState(changedProperties)) {
+      this.syncFormValueFromState();
     }
   }
 
